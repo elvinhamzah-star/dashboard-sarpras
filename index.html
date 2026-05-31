@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Maintenance Sarpras - Pondok Pesantren Al Fatih</title>
+    <!-- Library untuk cetak PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --gold-dark: #B8860B;
+            --gold-main: #D4AF37;
+            --gold-light: #E8D5A4;
+            --gold-lighter: #FFF8DC;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-50); color: var(--gray-900); -webkit-font-smoothing: antialiased; }
+        
+        /* HEADER - Fleksibel & Proporsional */
+        .header { background: white; border-bottom: 3px solid var(--gold-main); padding: 1.25rem 2rem; position: sticky; top: 0; z-index: 40; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .header-content { max-width: 1600px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap; }
+        
+        /* LOGO SECTION - Diperbesar maksimal agar gagah & seimbang */
+        .logo-section { display: flex; align-items: center; gap: 1.5rem; }
+        .logo { width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: transparent; }
+        .logo img { width: 100%; height: 100%; object-fit: contain; }
+        
+        /* TULISAN JUDUL - Tegas & Pas */
+        .title { font-size: 1.65rem; font-weight: 800; color: var(--gold-dark); letter-spacing: -0.025em; line-height: 1.2; }
+        .subtitle { font-size: 0.95rem; color: var(--gray-500); margin-top: 0.25rem; font-weight: 500; }
+        
+        /* NAVIGASI - Tombol Seimbang */
+        .nav-buttons { display: flex; gap: 0.85rem; flex-wrap: wrap; }
+        .nav-btn { padding: 0.65rem 1.5rem; background: white; border: 2px solid var(--gold-light); color: var(--gold-dark); font-weight: 700; font-size: 0.95rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; }
+        .nav-btn:hover, .nav-btn.active { background: var(--gold-main); color: white; border-color: var(--gold-main); box-shadow: 0 4px 6px rgba(212, 175, 55, 0.2); }
+        
+        .container { max-width: 1600px; margin: 0 auto; padding: 2rem; }
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        /* FILTER SECTION */
+        .filter-bar { background: white; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--gold-light); margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .filter-title { font-weight: 700; color: var(--gold-dark); margin-bottom: 1rem; font-size: 1.1rem; }
+        .filter-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .filter-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .filter-label { font-weight: 600; color: var(--gray-700); font-size: 0.9rem; }
+        .filter-select, .date-input { width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--gold-light); border-radius: 0.4rem; font-size: 0.95rem; }
+        .filter-buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .filter-btn { padding: 0.55rem 1.1rem; background: var(--gray-100); border: 1px solid var(--gray-300); color: var(--gray-700); border-radius: 0.4rem; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+        .filter-btn.active { background: var(--gold-main); color: white; border-color: var(--gold-main); }
+        
+        /* LAYOUT KARTU PROYEK */
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1.75rem; margin-bottom: 2rem; }
+        .project-card { background: white; border: 1px solid var(--gold-light); border-radius: 0.75rem; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s; }
+        .project-card:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); border-color: var(--gold-main); }
+        .project-header { background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-main) 100%); color: white; padding: 1.25rem; }
+        .project-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.35rem; }
+        .project-category { font-size: 0.85rem; opacity: 0.9; font-weight: 500; }
+        .project-content { padding: 1.25rem; }
+        
+        .dates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; font-size: 0.85rem; }
+        .date-item { background: var(--gold-lighter); padding: 0.6rem; border-radius: 0.4rem; }
+        .date-label { font-weight: 700; color: var(--gold-dark); font-size: 0.75rem; text-transform: uppercase; display: block; margin-bottom: 0.25rem; }
+        .date-value { font-weight: 600; color: var(--gray-900); }
+        
+        .progress-section { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--gray-200); }
+        .progress-title { font-weight: 700; color: var(--gold-dark); font-size: 0.85rem; margin-bottom: 0.6rem; text-transform: uppercase; }
+        .progress-item { margin-bottom: 0.75rem; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.35rem; color: var(--gray-600); font-weight: 600; }
+        .progress-bar { height: 10px; background: var(--gray-200); border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold-main)); transition: width 0.4s ease; }
+        
+        .status-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+        .badge { padding: 0.35rem 0.75rem; border-radius: 0.35rem; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+        .badge-success { background: #dcfce7; color: var(--success); }
+        .badge-warning { background: #fed7aa; color: var(--warning); }
+        .badge-danger { background: #fee2e2; color: var(--danger); }
+        
+        .budget-section { background: var(--gold-lighter); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.25rem; font-size: 0.9rem; border: 1px dashed var(--gold-light); }
+        .budget-row { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .budget-row:last-child { margin-bottom: 0; padding-top: 0.5rem; border-top: 1px solid var(--gold-light); }
+        
+        .action-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .btn-sm { flex: 1; padding: 0.6rem 0.75rem; background: var(--gold-main); color: white; border: none; border-radius: 0.4rem; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+        .btn-sm:hover { background: var(--gold-dark); }
+        
+        /* MODAL SYSTEM */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; backdrop-filter: blur(2px); }
+        .modal-overlay.active { display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; border-radius: 0.75rem; max-width: 95vw; max-height: 95vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-header { border-bottom: 2px solid var(--gold-light); padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; }
+        .modal-title { font-size: 1.35rem; font-weight: 700; color: var(--gold-dark); }
+        .modal-close { background: var(--gray-100); border: none; width: 36px; height: 36px; border-radius: 0.4rem; cursor: pointer; font-size: 1.25rem; color: var(--gray-600); }
+        .modal-content { padding: 1.5rem; }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; font-weight: 600; color: var(--gray-900); margin-bottom: 0.375rem; font-size: 0.95rem; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--gold-light); border-radius: 0.4rem; font-family: inherit; font-size: 0.95rem; }
+        .form-textarea { resize: vertical; min-height: 90px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        
+        .modal-footer { border-top: 1px solid var(--gold-light); padding: 1rem 1.5rem; display: flex; gap: 0.75rem; justify-content: flex-end; position: sticky; bottom: 0; background: white; }
+        .btn { padding: 0.7rem 1.5rem; border: none; border-radius: 0.4rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--gold-main); color: white; }
+        .btn-primary:hover { background: var(--gold-dark); }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-300); }
+        
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--gold-main); color: white; padding: 1rem 1.5rem; border-radius: 0.4rem; box-shadow: 0 10px 15px rgba(0,0,0,0.1); z-index: 100; font-weight: 600; }
+        .empty-state { text-align: center; padding: 4rem 1rem; color: var(--gray-500); }
+        
+        /* RESPONSIVE BREAKPOINT - Pengoptimalan Otomatis di Layar iPhone */
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .header-content { flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; }
+            .logo-section { flex-direction: column; gap: 0.75rem; }
+            .logo { width: 110px; height: 110px; } /* Ukuran proporsional di layar HP */
+            .title { font-size: 1.4rem; }
+            .subtitle { font-size: 0.85rem; }
+            
+            .nav-buttons { width: 100%; justify-content: center; gap: 0.5rem; }
+            .nav-btn { flex: 1; padding: 0.55rem 0.5rem; font-size: 0.85rem; text-align: center; white-space: nowrap; }
+            
+            .container { padding: 1rem; }
+            .projects-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .dates-grid { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+            .btn-sm { width: 100%; }
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+            .modal { box-shadow: none; max-height: none; overflow: visible; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header no-print">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <div>
+                    <div class="title">Maintenance Sarpras MAF</div>
+                    <div class="subtitle">Dashboard Monitoring Infrastruktur</div>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="switchView('dashboard')">Dashboard</button>
+                <button class="nav-btn" onclick="switchView('workitems')">Pekerjaan</button>
+                <button class="nav-btn" onclick="switchView('admin')">Admin</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="section active" id="dashboard">
+            <div class="filter-bar no-print">
+                <div class="filter-title">Filter Tanggal</div>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Rentang Waktu:</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" onclick="setDateRange(3)">3 Hari</button>
+                            <button class="filter-btn" onclick="setDateRange(7)">1 Minggu</button>
+                            <button class="filter-btn" onclick="setDateRange(14)">2 Minggu</button>
+                            <button class="filter-btn" onclick="setDateRange(30)">1 Bulan</button>
+                            <button class="filter-btn" onclick="showCustomDate()">Custom</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-row" id="customDateRange" style="display:none;">
+                    <div class="filter-group">
+                        <label class="filter-label">Dari Tanggal:</label>
+                        <input type="date" id="startDate" class="date-input">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Sampai Tanggal:</label>
+                        <input type="date" id="endDate" class="date-input">
+                    </div>
+                </div>
+            </div>
+            <div class="projects-grid" id="projectsGrid"></div>
+        </div>
+        <div class="section" id="workitems">
+            <div class="no-print" style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                <input type="text" id="searchInput" placeholder="Cari pekerjaan..." style="flex: 1; min-width: 250px; padding: 0.65rem; border: 1px solid var(--gold-light); border-radius: 0.4rem;">
+                <select id="categoryFilter" class="filter-select" style="max-width: 250px;"></select>
+                <select id="statusFilter" class="filter-select" style="max-width: 250px;">
+                    <option value="">Semua Status</option>
+                    <option value="Planning">Perencanaan</option>
+                    <option value="On Going">Sedang Berjalan</option>
+                    <option value="On Hold">Ditahan</option>
+                    <option value="Completed">Selesai</option>
+                </select>
+            </div>
+            <div id="workItemsList" style="display: grid; gap: 0.75rem;"></div>
+        </div>
+        <div class="section" id="admin">
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div style="background: white; padding: 2rem; border-radius: 0.75rem; border: 1px solid var(--gold-light); box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                    <h2 style="color: var(--gold-dark); margin-bottom: 1.5rem; text-align: center;">Panel Admin</h2>
+                    <div id="adminLocked" style="text-align: center;">
+                        <p style="margin-bottom: 1.5rem; color: var(--gray-600); font-weight: 500;">Masukkan password untuk akses admin</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+                            <input type="password" id="adminPassword" placeholder="Password" style="width: 100%; padding: 0.7rem; border: 1px solid var(--gold-light); border-radius: 0.4rem; text-align: center; font-size: 1rem;">
+                            <button class="btn btn-primary" style="width: 100%;" onclick="unlockAdmin()">Buka Kunci</button>
+                        </div>
+                    </div>
+                    <div id="adminPanel" style="display: none;">
+                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="openAddModal()">+ Tambah Pekerjaan</button>
+                        <button class="btn btn-primary" style="width: 100%; background: var(--gray-600); margin-bottom: 1rem;" onclick="exportData()">📥 Export Data Backup</button>
+                        <button class="btn btn-primary" style="width: 100%; background: var(--gray-600);" onclick="importData()">📤 Import Data Backup</button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: UPDATE LOG HARIAN -->
+    <div class="modal-overlay no-print" id="quickUpdateModal">
+        <div class="modal" style="width: 90vw; max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-title">Update Kerja & Kas Harian</div>
+                <button class="modal-close" onclick="closeModal('quickUpdateModal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label class="form-label">Progress Realisasi Fisik Lapangan (%):</label>
+                    <input type="number" id="updateProgress" min="0" max="100" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Biaya Keluar Hari Ini (Rp):</label>
+                    <input type="number" id="updateCost" min="0" class="form-input" placeholder="Contoh: 350000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Catatan Aktivitas / Uraian Tukang:</label>
+                    <textarea id="updateNotes" class="form-textarea" placeholder="Tulis rincian aktivitas lapangan hari ini..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kendala Lapangan / Issues:</label>
+                    <select id="issueType" class="form-select">
+                        <option value="">Tidak ada kendala</option>
+                        <option value="Material delay">Keterlambatan Material</option>
+                        <option value="Weather">Cuaca Buruk</option>
+                        <option value="Labor">Kekurangan Tukang</option>
+                        <option value="Equipment">Alat Rusak</option>
+                        <option value="Change order">Perubahan Desain / RAB</option>
+                        <option value="Other">Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group" id="issueDetailsGroup" style="display:none;">
+                    <label class="form-label">Detail Hambatan:</label>
+                    <textarea id="issueDetails" class="form-textarea" placeholder="Jelaskan detail hambatan projek..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('quickUpdateModal')">Batal</button>
+                <button class="btn btn-primary" onclick="saveQuickUpdate()">Simpan Laporan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MASTER TAMBAH/EDIT TUGAS -->
+    <div class="modal-overlay no-print" id="workItemModal">
+        <div class="modal" style="width: 95vw; max-width: 750px;">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Tambah Pekerjaan</div>
+                <button class="modal-close" onclick="closeModal('workItemModal')">&times;</button>
+            </div>
+            <div class="modal-content">
+                <form id="workItemForm" onsubmit="saveWorkItem(event)">
+                    <div class="form-group">
+                        <label class="form-label">Nama Pekerjaan *</label>
+                        <input type="text" id="itemName" class="form-input" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Kategori Pekerjaan *</label>
+                            <input type="text" id="itemCategory" class="form-input" placeholder="Struktural, ME, Sanitasi, dll" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status Awal *</label>
+                            <select id="itemStatus" class="form-select" required>
+                                <option value="Planning">Perencanaan</option>
+                                <option value="On Going">Sedang Berjalan</option>
+                                <option value="On Hold">Ditahan</option>
+                                <option value="Completed">Selesai</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tanggal Mulai *</label>
+                            <input type="date" id="itemStartDate" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Target Selesai *</label>
+                            <input type="date" id="itemEndDate" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Pagu Anggaran / Batas Biaya RAB (Rp) *</label>
+                            <input type="number" id="itemBudget" min="0" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Progress Awal Fisik (%) *</label>
+                            <input type="number" id="itemRabProgress" min="0" max="100" class="form-input" value="0" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tautan Dokumentasi Google Drive</label>
+                        <input type="text" id="itemFolderAwal" class="form-input" placeholder="Link Folder Kondisi Awal">
+                        <input type="text" id="itemFolderProses" class="form-input" placeholder="Link Folder Proses Lapangan" style="margin-top: 0.5rem;">
+                        <input type="text" id="itemFolderAkhir" class="form-input" placeholder="Link Folder Kondisi Akhir" style="margin-top: 0.5rem;">
+                        <input type="text" id="itemFolderBukti" class="form-input" placeholder="Link Folder Nota / Arsip Kuitansi" style="margin-top: 0.5rem;">
+                        <input type="text" id="itemFileRab" class="form-input" placeholder="Link Berkas Excel Perhitungan RAB Resmi" style="margin-top: 0.5rem;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lingkup Kerja & Spesifikasi Material</label>
+                        <textarea id="itemNotes" class="form-textarea" placeholder="Detail lingkup penugasan tukang..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('workItemModal')">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: LAPORAN DETAIL & CETAK PDF -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal" style="width: 95vw; max-width: 900px;">
+            <div class="modal-header no-print">
+                <div class="modal-title">Lembar Progress Sarpras</div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-primary" id="pdfBtn" style="background: #0077cc; padding: 0.5rem 1rem; font-size:0.85rem;">📄 Cetak PDF</button>
+                    <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
+                </div>
+            </div>
+            <div class="modal-content" id="detailContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let workItems = [];
+        let currentEditId = null;
+        let currentQuickUpdateId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            renderDashboard();
+            document.getElementById('issueType').addEventListener('change', (e) => {
+                document.getElementById('issueDetailsGroup').style.display = e.target.value ? 'block' : 'none';
+            });
+        });
+
+        function loadData() {
+            const stored = localStorage.getItem('maf-workitems');
+            workItems = stored ? JSON.parse(stored) : [];
+        }
+
+        function saveData() {
+            localStorage.setItem('maf-workitems', JSON.stringify(workItems));
+            renderDashboard();
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
+        }
+
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('id-ID');
+        }
+
+        function switchView(view) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(view).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) event.target.classList.add('active');
+            if (view === 'workitems') renderWorkItems();
+        }
+
+        function setDateRange(days) {
+            if (event && event.target) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+            document.getElementById('customDateRange').style.display = 'none';
+            renderDashboard();
+        }
+
+        function showCustomDate() {
+            document.getElementById('customDateRange').style.display = 'grid';
+        }
+
+        function renderDashboard() {
+            const grid = document.getElementById('projectsGrid');
+            if (!workItems.length) {
+                grid.innerHTML = '<div class="empty-state"><div style="font-size: 2.5rem; margin-bottom: 1rem;">📋</div><div>Belum ada data pekerjaan infrastruktur sarpras.</div></div>';
+                return;
+            }
+            grid.innerHTML = workItems.map(item => {
+                const start = new Date(item.startDate);
+                const end = new Date(item.endDate);
+                const today = new Date();
+                const isDelay = today > end && item.status !== 'Completed';
+                
+                const biayaActual = item.dailyLogs?.reduce((sum, log) => sum + (parseFloat(log.actualCost) || 0), 0) || 0;
+                const isOverBudget = biayaActual > item.budget;
+                const timelineProgress = Math.min(100, Math.max(0, Math.round(((today - start) / (end - start)) * 100)));
+                const selisih = item.budget - biayaActual;
+                
+                return `
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-name">${item.name}</div>
+                            <div class="project-category">${item.category}</div>
+                        </div>
+                        <div class="project-content">
+                            <div class="dates-grid">
+                                <div class="date-item">
+                                    <span class="date-label">Mulai</span>
+                                    <span class="date-value">${formatDate(item.startDate)}</span>
+                                </div>
+                                <div class="date-item">
+                                    <span class="date-label">Target Selesai</span>
+                                    <span class="date-value">${formatDate(item.endDate)}</span>
+                                </div>
+                            </div>
+                            <div class="progress-section">
+                                <div class="progress-label">
+                                    <span>Durasi Waktu Berjalan</span>
+                                    <span>${timelineProgress}%</span>
+                                </div>
+                                <div class="progress-bar" style="margin-bottom:0.85rem;">
+                                    <div class="progress-fill" style="width: ${timelineProgress}%"></div>
+                                </div>
+                                <div class="progress-label">
+                                    <span>Realisasi Fisik Lapangan</span>
+                                    <span>${item.rabProgress || 0}%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${item.rabProgress || 0}%; background: linear-gradient(90deg, #16a34a, #22c55e);"></div>
+                                </div>
+                            </div>
+                            <div class="status-badges">
+                                <span class="badge ${isDelay ? 'badge-warning' : 'badge-success'}">
+                                    ${isDelay ? '⚠️ Keterlambatan' : '✓ On Schedule'}
+                                </span>
+                                <span class="badge ${isOverBudget ? 'badge-danger' : 'badge-success'}">
+                                    ${isOverBudget ? '❌ Over Budget' : '✓ Anggaran Aman'}
+                                </span>
+                                <span class="badge badge-success" style="background:#e0f2fe; color:#0369a1;">${item.status}</span>
+                            </div>
+                            <div class="budget-section">
+                                <div class="budget-row">
+                                    <span>Pagu Anggaran (RAB):</span>
+                                    <span style="font-weight:700;">${formatCurrency(item.budget)}</span>
+                                </div>
+                                <div class="budget-row">
+                                    <span>Total Terpakai:</span>
+                                    <span style="font-weight:700; color:var(--warning);">${formatCurrency(biayaActual)}</span>
+                                </div>
+                                <div class="budget-row">
+                                    <span>Sisa Dana:</span>
+                                    <span style="font-weight: 800; color: ${selisih >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatCurrency(selisih)}</span>
+                                </div>
+                            </div>
+                            <div class="action-buttons no-print">
+                                <button class="btn-sm" onclick="showDetail('${item.id}')">Detail / PDF</button>
+                                <button class="btn-sm" onclick="quickUpdate('${item.id}')" style="background: var(--warning);">Log Harian</button>
+                                <button class="btn-sm" onclick="editItem('${item.id}')" style="background: var(--gray-600);">Ubah</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showDetail(id) {
+            const item = workItems.find(w => w.id === id);
+            if (!item) return;
+            const biayaActual = item.dailyLogs?.reduce((sum, log) => sum + (parseFloat(log.actualCost) || 0), 0) || 0;
+            const selisih = item.budget - biayaActual;
+            
+            let html = `
+                <div id="pdf-container" style="padding: 15px; background: white;">
+                    <div style="text-align: center; margin-bottom: 25px; border-bottom: 3px double var(--gold-main); padding-bottom: 15px;">
+                        <h2 style="color: var(--gold-dark); text-transform: uppercase; font-size:1.5rem; letter-spacing:0.5px;">Laporan Pemeliharaan Infrastruktur Sarpras</h2>
+                        <h3 style="color: var(--gray-600); font-weight: 600; margin-top:5px;">Pondok Pesantren Al Fatih</h3>
+                    </div>
+
+                    <div style="background: var(--gold-lighter); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid var(--gold-light);">
+                        <h3 style="color: var(--gold-dark); margin-bottom: 1rem; border-bottom: 2px solid var(--gold-light); padding-bottom: 0.5rem; font-size:1.25rem;">${item.name}</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; font-size: 0.95rem; line-height:1.5;">
+                            <div><strong>Kategori Kerja:</strong> ${item.category}</div>
+                            <div><strong>Status Operasional:</strong> ${item.status}</div>
+                            <div><strong>Tanggal Pelaksanaan:</strong> ${formatDate(item.startDate)}</div>
+                            <div><strong>Target Penyelesaian:</strong> ${formatDate(item.endDate)}</div>
+                            <div><strong>Pagu Budget RAB:</strong> ${formatCurrency(item.budget)}</div>
+                            <div><strong>Dana Terpakai Real:</strong> ${formatCurrency(biayaActual)}</div>
+                            <div><strong>Sisa Saldo Kas:</strong> <span style="font-weight:bold; color: ${selisih >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatCurrency(selisih)}</span></div>
+                            <div><strong>Capaian Fisik Lapangan:</strong> ${item.rabProgress || 0}%</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;" class="no-print">
+                        <h4 style="color: var(--gold-dark); margin-bottom: 0.6rem; font-size:1.05rem;">🔗 Berkas Digital & Google Drive Tautan</h4>
+                        <ul style="list-style: none; padding-left: 0; display: grid; gap: 0.5rem; font-size: 0.9rem;">
+                            <li>📁 <strong>Kondisi Awal Lapangan:</strong> ${item.folderAwal ? `<a href="${item.folderAwal}" target="_blank">Buka Link Folder</a>` : '-'}</li>
+                            <li>📁 <strong>Dokumentasi Proses Kerja:</strong> ${item.folderProses ? `<a href="${item.folderProses}" target="_blank">Buka Link Folder</a>` : '-'}</li>
+                            <li>📁 <strong>Kondisi Akhir Hasil Projek:</strong> ${item.folderAkhir ? `<a href="${item.folderAkhir}" target="_blank">Buka Link Folder</a>` : '-'}</li>
+                            <li>📁 <strong>Arsip Nota & Bukti Transaksi:</strong> ${item.folderBukti ? `<a href="${item.folderBukti}" target="_blank">Buka Link Folder</a>` : '-'}</li>
+                            <li>📄 <strong>Lampiran Lembar Anggaran/RAB:</strong> ${item.fileRab ? `<a href="${item.fileRab}" target="_blank">Buka Dokumen</a>` : '-'}</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--gold-dark); margin-bottom: 0.6rem; font-size:1.05rem;">📋 Catatan Uraian Pekerjaan</h4>
+                        <p style="white-space: pre-line; background: var(--gray-50); padding: 1rem; border-radius: 0.4rem; border: 1px solid var(--gray-200); font-size:0.95rem; line-height:1.5;">${item.notes || 'Tidak ada spesifikasi khusus.'}</p>
+                    </div>
+
+                    <div>
+                        <h4 style="color: var(--gold-dark); margin-bottom: 0.6rem; font-size:1.05rem;">⏱️ Log Buku Kas Harian Lapangan</h4>
+                        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                            ${item.dailyLogs && item.dailyLogs.length ? item.dailyLogs.map(log => `
+                                <div style="padding: 1rem; background: var(--gray-50); border-radius: 0.4rem; border: 1px solid var(--gray-200); border-left: 5px solid var(--gold-main);">
+                                    <div style="display:flex; justify-content:space-between; font-weight: 700; color: var(--gold-dark); font-size: 0.9rem; margin-bottom: 0.5rem; flex-wrap:wrap; gap:0.5rem;">
+                                        <span>📆 ${formatDate(log.date)} (Progress Fisik: ${log.progress}%)</span>
+                                        <span style="color: var(--danger);">Biaya Keluar: ${formatCurrency(log.actualCost || 0)}</span>
+                                    </div>
+                                    <p style="font-size:0.9rem; color:var(--gray-700); line-height:1.4;">${log.notes || 'Aktivitas lapangan berjalan lancar.'}</p>
+                                    ${log.issues && log.issues.length ? `<div style="margin-top:0.5rem; font-size:0.85rem; color:var(--danger); font-weight:700;">⚠️ Hambatan Lapangan: ${log.issues.join(', ')}</div>` : ''}
+                                </div>
+                            `).join('') : '<p style="color:var(--gray-500); font-size:0.9rem;">Belum ada catatan aktivitas lapangan.</p>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('detailContent').innerHTML = html;
+            
+            document.getElementById('pdfBtn').onclick = () => {
+                const element = document.getElementById('pdf-container');
+                const opt = {
+                    margin:       12,
+                    filename:     `Laporan_Sarpras_${item.name.replace(/\s+/g, '_')}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save();
+            };
+
+            openModal('detailModal');
+        }
+
+        function quickUpdate(id) {
+            currentQuickUpdateId = id;
+            const item = workItems.find(w => w.id === id);
+            if (!item) return;
+            document.getElementById('updateProgress').value = item.rabProgress || 0;
+            document.getElementById('updateCost').value = '';
+            document.getElementById('updateNotes').value = '';
+            document.getElementById('issueType').value = '';
+            document.getElementById('issueDetails').value = '';
+            document.getElementById('issueDetailsGroup').style.display = 'none';
+            openModal('quickUpdateModal');
+        }
+
+        function saveQuickUpdate() {
+            const item = workItems.find(w => w.id === currentQuickUpdateId);
+            if (!item) return;
+            const progress = parseInt(document.getElementById('updateProgress').value) || 0;
+            const cost = parseFloat(document.getElementById('updateCost').value) || 0;
+            const notes = document.getElementById('updateNotes').value;
+            const issueType = document.getElementById('issueType').value;
+            const issueDetails = document.getElementById('issueDetails').value;
+
+            if(!item.dailyLogs) item.dailyLogs = [];
+            let logsIssues = [];
+            if (issueType) {
+                logsIssues.push(`${issueType}${issueDetails ? `: ${issueDetails}` : ''}`);
+            }
+
+            item.rabProgress = progress;
+            item.dailyLogs.push({
+                date: new Date().toISOString().split('T')[0],
+                progress: progress,
+                notes: notes,
+                issues: logsIssues,
+                actualCost: cost
+            });
+
+            saveData();
+            closeModal('quickUpdateModal');
+            showToast('Catatan harian & rincian biaya pengeluaran berhasil disimpan!');
+        }
+
+        function openAddModal() {
+            currentEditId = null;
+            document.getElementById('modalTitle').textContent = 'Tambah Pekerjaan';
+            document.getElementById('workItemForm').reset();
+            openModal('workItemModal');
+        }
+
+        function editItem(id) {
+            currentEditId = id;
+            const item = workItems.find(w => w.id === id);
+            if (!item) return;
+
+            document.getElementById('modalTitle').textContent = 'Ubah Pekerjaan';
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemCategory').value = item.category;
+            document.getElementById('itemStatus').value = item.status;
+            document.getElementById('itemStartDate').value = item.startDate;
+            document.getElementById('itemEndDate').value = item.endDate;
+            document.getElementById('itemBudget').value = item.budget;
+            document.getElementById('itemRabProgress').value = item.rabProgress || 0;
+            document.getElementById('itemFolderAwal').value = item.folderAwal || '';
+            document.getElementById('itemFolderProses').value = item.folderProses || '';
+            document.getElementById('itemFolderAkhir').value = item.folderAkhir || '';
+            document.getElementById('itemFolderBukti').value = item.folderBukti || '';
+            document.getElementById('itemFileRab').value = item.fileRab || '';
+            document.getElementById('itemNotes').value = item.notes || '';
+
+            openModal('workItemModal');
+        }
+
+        function saveWorkItem(e) {
+            e.preventDefault();
+            const itemData = {
+                name: document.getElementById('itemName').value,
+                category: document.getElementById('itemCategory').value,
+                status: document.getElementById('itemStatus').value,
+                startDate: document.getElementById('itemStartDate').value,
+                endDate: document.getElementById('itemEndDate').value,
+                budget: parseFloat(document.getElementById('itemBudget').value) || 0,
+                rabProgress: parseInt(document.getElementById('itemRabProgress').value) || 0,
+                folderAwal: document.getElementById('itemFolderAwal').value,
+                folderProses: document.getElementById('itemFolderProses').value,
+                folderAkhir: document.getElementById('itemFolderAkhir').value,
+                folderBukti: document.getElementById('itemFolderBukti').value,
+                fileRab: document.getElementById('itemFileRab').value,
+                notes: document.getElementById('itemNotes').value,
+            };
+
+            if (currentEditId) {
+                const idx = workItems.findIndex(w => w.id === currentEditId);
+                if (idx !== -1) {
+                    workItems[idx] = { ...workItems[idx], ...itemData };
+                }
+            } else {
+                itemData.id = Date.now().toString();
+                itemData.dailyLogs = [];
+                workItems.push(itemData);
+            }
+
+            saveData();
+            closeModal('workItemModal');
+            showToast('Perubahan data master berhasil disimpan!');
+        }
+
+        function unlockAdmin() {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === 'admin123') { 
+                document.getElementById('adminLocked').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                showToast('Akses manajemen sarpras terbuka!');
+            } else {
+                alert('Akses ditolak! Password salah.');
+            }
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(workItems));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Backup_Sarpras_MAF_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importData() {
+            const input = document.getElementById('importFile');
+            input.click();
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const parsed = JSON.parse(event.target.result);
+                        if (Array.isArray(parsed)) {
+                            workItems = parsed;
+                            saveData();
+                            showToast('Data internal berhasil diperbarui dari berkas backup!');
+                        } else {
+                            alert('Struktur berkas JSON tidak sesuai!');
+                        }
+                    } catch (err) {
+                        alert('Gagal memproses berkas data!');
+                    }
+                };
+                reader.readAsText(file);
+            };
+        }
+
+        function renderWorkItems() {
+            const list = document.getElementById('workItemsList');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const cat = document.getElementById('categoryFilter').value;
+            const stat = document.getElementById('statusFilter').value;
+
+            const categories = [...new Set(workItems.map(w => w.category))];
+            const catFilter = document.getElementById('categoryFilter');
+            const currentCatVal = catFilter.value;
+            catFilter.innerHTML = '<option value="">Semua Kategori</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            catFilter.value = currentCatVal;
+
+            const filtered = workItems.filter(item => {
+                return (item.name.toLowerCase().includes(search) || item.category.toLowerCase().includes(search)) &&
+                       (cat === '' || item.category === cat) &&
+                       (stat === '' || item.status === stat);
+            });
+
+            if(!filtered.length) {
+                list.innerHTML = '<div class="empty-state">Tidak ditemukan hasil pekerjaan sarpras yang cocok.</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(item => `
+                <div style="background:white; padding:1.25rem; border-radius:0.5rem; border:1px solid var(--gold-light); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <strong style="font-size:1.05rem;">${item.name}</strong> <span style="font-size:0.85rem; color:var(--gray-500); font-weight:600;">(${item.category})</span>
+                        <div style="font-size:0.9rem; margin-top:0.35rem; color:var(--gray-600)">Status: <span style="color:var(--gold-dark); font-weight:700;">${item.status}</span> | Fisik: <strong>${item.rabProgress || 0}%</strong></div>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; width:100%; max-width:200px;">
+                        <button class="btn-sm" onclick="showDetail('${item.id}')">Detail</button>
+                        <button class="btn-sm" onclick="editItem('${item.id}')" style="background:var(--gray-500)">Ubah</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('searchInput').oninput = renderWorkItems;
+            document.getElementById('categoryFilter').onchange = renderWorkItems;
+            document.getElementById('statusFilter').onchange = renderWorkItems;
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
