@@ -3,492 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Maintenance Sarpras - Pondok Pesantren Al Fatih</title>
-    <!-- Library untuk cetak PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <title>Dashboard Monitoring Sarpras</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --gold-dark: #8B860B;
-            --gold-main: #D4AF37;
-            --gold-light: #E8D5A4;
-            --gold-lighter: #FFF8DC;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-900: #111827;
-            --success: #16a34a;
-            --warning: #ea580c;
-            --danger: #dc2626;
+            --gold: #D4AF37;
+            --dark: #222;
+            --bg: #f7f5f0;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f7f5f0; color: var(--gray-900); }
-        header { background: #white; border-bottom: 3px solid var(--gold-main); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .logo-area { display: flex; align-items: center; gap: 1rem; }
-        .logo-area img { height: 50px; width: auto; object-fit: contain; }
-        .logo-text h1 { font-size: 1.5rem; color: var(--gold-dark); font-weight: 700; }
-        .logo-text p { font-size: 0.85rem; color: var(--gray-500); }
-        nav { display: flex; gap: 1rem; align-items: center; }
-        .nav-btn { padding: 0.5rem 1rem; border: 1px solid var(--gold-main); background: transparent; color: var(--gold-dark); border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-        .nav-btn.active, .nav-btn:hover { background: var(--gold-lighter); }
-        .nav-btn.admin-btn { background: var(--gold-main); color: white; border: none; }
-        .nav-btn.admin-btn:hover { background: var(--gold-dark); }
-        main { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--gray-200); border-left: 4px solid var(--gold-main); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .stat-card.success { border-left-color: var(--success); }
-        .stat-card.warning { border-left-color: var(--warning); }
-        .stat-card h3 { font-size: 0.85rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; }
-        .stat-card .value { font-size: 1.8rem; font-weight: 700; margin-top: 0.5rem; color: var(--gray-900); }
-        .controls { background: white; padding: 1rem; border-radius: 8px; border: 1px solid var(--gray-200); margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-        .search-filter { display: flex; gap: 1rem; flex-wrap: wrap; flex: 1; }
-        .input-field { padding: 0.5rem 0.75rem; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.9rem; min-width: 200px; }
-        .input-field:focus { outline: none; border-color: var(--gold-main); ring: 2px solid var(--gold-light); }
-        .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: background 0.2s; }
-        .btn-primary { background: var(--gold-main); color: white; }
-        .btn-primary:hover { background: var(--gold-dark); }
-        .btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-300); }
-        .btn-secondary:hover { background: var(--gray-200); }
-        .table-container { background: white; border-radius: 8px; border: 1px solid var(--gray-200); overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-        th { background: var(--gray-50); padding: 0.75rem 1rem; font-weight: 600; color: var(--gray-700); border-bottom: 1px solid var(--gray-200); }
-        td { padding: 1rem; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
-        tr:hover { background-color: var(--gray-50); }
-        .badge { display: inline-flex; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: 600; border-radius: 9999px; }
-        .badge-perencanaan { background: #eff6ff; color: #1d4ed8; }
-        .badge-proses { background: #fff7ed; color: #c2410c; }
-        .badge-selesai { background: #f0fdf4; color: #15803d; }
-        .progress-bar-container { width: 100%; background: var(--gray-200); height: 8px; border-radius: 9999px; margin-top: 0.5rem; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--gold-main); border-radius: 9999px; }
-        .progress-bar.complete { background: var(--success); }
-        .drive-links { display: grid; grid-template-columns: 1fr; gap: 0.25rem; font-size: 0.8rem; }
-        .drive-links a { color: var(--gold-dark); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; }
-        .drive-links a:hover { text-decoration: underline; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 8px; width: 100%; max-width: 700px; max-height: 900px; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border-top: 5px solid var(--gold-main); }
-        .modal-header { padding: 1.25rem; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h2 { font-size: 1.25rem; color: var(--gold-dark); }
-        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); }
-        .modal-body { padding: 1.5rem; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
-        .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-        .form-group.full-width { grid-column: span 2; }
-        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--gray-700); }
-        .modal-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--gray-200); background: var(--gray-50); display: flex; justify-content: flex-end; gap: 0.75rem; border-radius: 0 0 8px 8px; }
-        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--gray-900); color: white; padding: 0.75rem 1.5rem; border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: none; z-index: 2000; font-size: 0.9rem; }
-        @media(max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-group.full-width { grid-column: span 1; } .controls { flex-direction: column; align-items: stretch; } }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--dark); }
+        .container { max-width: 1400px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-top: 0; }
+        
+        /* Navigasi Tab */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; border: none; background: #e0e0e0; cursor: pointer; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .tab-btn.active { background: var(--gold); color: white; }
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* Gaya Tabel */
+        .table-container { overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        th { background: var(--dark); color: white; padding: 12px 10px; font-weight: 600; }
+        td { padding: 10px; border-bottom: 1px solid #ddd; }
+        tr:hover { background-color: #f9f6f0; }
+        
+        /* Badge Status */
+        .badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; display: inline-block; }
+        .bg-ongoing { background-color: #0052cc; }
+        .bg-selesai { background-color: #00875a; }
+        .bg-onhold { background-color: #de350b; }
+        .bg-perencanaan { background-color: #42526e; }
+
+        /* Form Edit Popup/Overlay */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-submit { background: var(--gold); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-close { background: #888; color: white; border: none; padding: 5px 10px; float: right; cursor: pointer; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-area">
-            <!-- File logo.png akan otomatis dipanggil jika berada di repositori yang sama -->
-            <img src="logo.png" alt="Logo Al Fatih" onerror="this.src='https://via.placeholder.com/50x50?text=MAF'">
-            <div class="logo-text">
-                <h1>Maintenance Sarpras</h1>
-                <p>Dashboard Monitoring Infrastruktur & ME | Pondok Pesantren Al Fatih</p>
-            </div>
-        </div>
-        <nav>
-            <button class="nav-btn active" onclick="switchTab('dashboard')">Dashboard View</button>
-            <button class="nav-btn" onclick="switchTab('pekerjaan')">Daftar Pekerjaan</button>
-            <button class="nav-btn admin-btn" id="adminToggleBtn" onclick="toggleAdminMode()">Login Admin</button>
-        </nav>
-    </header>
+<div class="container">
+    <h2>Monitoring Maintenance Sarpras Al-Fatih</h2>
+    
+    <!-- Menu Pilihan Halaman -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard Data</button>
+        <button class="tab-btn" onclick="switchTab('rangkuman')">Rangkuman & Analisa</button>
+    </div>
 
-    <main>
-        <!-- TABS 1: DASHBOARD STATISTIK -->
-        <div id="tab-dashboard" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Project</h3>
-                    <div class="value" id="stat-total">0</div>
-                </div>
-                <div class="stat-card warning">
-                    <h3>Dalam Proses</h3>
-                    <div class="value" id="stat-proses">0</div>
-                </div>
-                <div class="stat-card success">
-                    <h3>Selesai</h3>
-                    <div class="value" id="stat-selesai">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Alokasi Dana Terpakai</h3>
-                    <div class="value" style="font-size:1.4rem; margin-top:0.8rem;" id="stat-dana">Rp 0</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TABS 2 & GENERAL: TABEL UTAMA -->
-        <div class="controls">
-            <div class="search-filter">
-                <input type="text" id="searchInput" class="input-field" placeholder="Cari nama pekerjaan...">
-                <select id="categoryFilter" class="input-field">
-                    <option value="">Semua Kategori</option>
-                    <option value="Struktural">Struktural</option>
-                    <option value="ME">Mechanical / Electrical (ME)</option>
-                    <option value="Sanitasi">Sanitasi / Air</option>
-                    <option value="Fasilitas">Fasilitas Umum</option>
-                </select>
-                <select id="statusFilter" class="input-field">
-                    <option value="">Semua Status</option>
-                    <option value="Perencanaan">Perencanaan</option>
-                    <option value="Proses Lapangan">Proses Lapangan</option>
-                    <option value="Selesai">Selesai</option>
-                </select>
-            </div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="btn btn-secondary" onclick="exportToPDF()">Cetak PDF</button>
-                <button class="btn btn-primary" id="addWorkBtn" style="display: none;" onclick="openModal()">+ Tambah Pekerjaan</button>
-            </div>
-        </div>
-
+    <!-- Halaman 1: Tabel Utama -->
+    <div id="dashboard" class="panel active">
         <div class="table-container">
-            <table id="workTable">
+            <table>
                 <thead>
                     <tr>
-                        <th style="width: 25%;">Nama Pekerjaan</th>
-                        <th style="width: 12%;">Kategori</th>
-                        <th style="width: 13%;">Status</th>
-                        <th style="width: 15%;">Target Waktu</th>
-                        <th style="width: 15%;">Total RAB / Fisik</th>
-                        <th style="width: 20%;">Dokumentasi Google Drive</th>
-                        <th id="thAksi" style="width: 10%; display: none;">Aksi</th>
+                        <th>No</th>
+                        <th>Program</th>
+                        <th>Nama Pekerjaan</th>
+                        <th>Status</th>
+                        <th>Total Anggaran</th>
+                        <th>Realisasi</th>
+                        <th>Sisa</th>
+                        <th>Link Detail</th>
+                        <th>Keterangan</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <!-- Data dimuat via JavaScript -->
+                    <tr><td colspan="10" style="text-align:center;">Sedang memuat data dari laboratorium...</td></tr>
                 </tbody>
             </table>
         </div>
-    </main>
-
-    <!-- MODAL FORM INPUT & EDIT -->
-    <div class="modal" id="workModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Tambah Pekerjaan</h2>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="workForm">
-                    <input type="hidden" id="editIndex">
-                    <div class="form-grid">
-                        <div class="form-group full-width">
-                            <label for="workName">Nama Pekerjaan *</label>
-                            <input type="text" id="workName" class="input-field" required placeholder="Contoh: Pemasangan Water Filtration Sistem Gedung B">
-                        </div>
-                        <div class="form-group">
-                            <label for="workCategory">Kategori Pekerjaan *</label>
-                            <select id="workCategory" class="input-field" required>
-                                <option value="Struktural">Struktural</option>
-                                <option value="ME">Mechanical / Electrical (ME)</option>
-                                <option value="Sanitasi">Sanitasi / Air</option>
-                                <option value="Fasilitas">Fasilitas Umum</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="workStatus">Status Awal *</label>
-                            <select id="workStatus" class="input-field" required>
-                                <option value="Perencanaan">Perencanaan</option>
-                                <option value="Proses Lapangan">Proses Lapangan</option>
-                                <option value="Selesai">Selesai</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="startDate">Tanggal Mulai *</label>
-                            <input type="date" id="startDate" class="input-field" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="endDate">Target Selesai *</label>
-                            <input type="date" id="endDate" class="input-field" required>
-                        </div>
-                        <!-- Perubahan teks label sesuai permintaan user dari Screenshot 2026-05-31 at 21.41.28.jpg -->
-                        <div class="form-group">
-                            <label for="workRab">Total RAB (Rp) *</label>
-                            <input type="number" id="workRab" class="input-field" required placeholder="Contoh: 15000000">
-                        </div>
-                        <div class="form-group">
-                            <label for="workProgress">Progress Awal Fisik (%) *</label>
-                            <input type="number" id="workProgress" class="input-field" min="0" max="100" required value="0">
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Tautan Dokumentasi Google Drive</label>
-                            <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.25rem;">
-                                <input type="url" id="driveAwal" class="input-field" placeholder="Link Folder Kondisi Awal">
-                                <input type="url" id="driveProses" class="input-field" placeholder="Link Folder Proses Lapangan">
-                                <input type="url" id="driveAkhir" class="input-field" placeholder="Link Folder Kondisi Akhir">
-                                <input type="url" id="driveNota" class="input-field" placeholder="Link Folder Nota / Arsip Kuitansi">
-                                <input type="url" id="driveRab" class="input-field" placeholder="Link Berkas Excel Perhitungan RAB Resmi">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
-                        <button type="submit" class="btn btn-primary" id="saveBtn">Simpan Data</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
-    <div class="toast" id="toastMessage">Data berhasil disimpan!</div>
+    <!-- Halaman 2: Rangkuman & Analisa Otomatis -->
+    <div id="rangkuman" class="panel">
+        <h3>Rangkuman Realisasi Anggaran</h3>
+        <p id="totalBudgetInfo">Menghitung total...</p>
+        <hr>
+        <h3>Analisa Progres Lapangan</h3>
+        <ul id="analisaList">
+            <li>Menghitung persentase progres...</li>
+        </ul>
+    </div>
+</div>
 
-    <script>
-        // Data master awal simulasi pekerjaan sarpras
-        let workData = [
-            {
-                name: "Pemasangan Mesin Air Minum RO Lantai 1",
-                category: "Sanitasi",
-                status: "Selesai",
-                start: "2026-02-10",
-                end: "2026-02-18",
-                rab: 12500000,
-                progress: 100,
-                links: { awal: "#", proses: "#", akhir: "#", nota: "#", rab: "#" }
-            },
-            {
-                name: "Renovasi Taman & Pembuatan Kursi Beton Area Gazebo",
-                category: "Struktural",
-                status: "Proses Lapangan",
-                start: "2026-03-05",
-                end: "2026-04-10",
-                rab: 24000000,
-                progress: 65,
-                links: { awal: "#", proses: "#", akhir: "", nota: "", rab: "#" }
-            },
-            {
-                name: "Peremajaan Kabel Panel Listrik Utama Gedung Asrama Putra",
-                category: "ME",
-                status: "Perencanaan",
-                start: "2026-06-01",
-                end: "2026-06-15",
-                rab: 8500000,
-                progress: 0,
-                links: { awal: "", proses: "", akhir: "", nota: "", rab: "#" }
-            }
-        ];
+<!-- Jendela Popup untuk Edit Data -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <button class="btn-close" onclick="closeModal()">X</button>
+        <h3>Edit Progress Pekerjaan</h3>
+        <input type="hidden" id="oldName">
+        <div class="form-group">
+            <label>Nama Pekerjaan</label>
+            <input type="text" id="editNama" disabled style="background: #eee;">
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="editStatus">
+                <option value="Perencanaan">Perencanaan</option>
+                <option value="On Going">On Going</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Selesai">Selesai</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Realisasi Anggaran (Rp)</label>
+            <input type="number" id="editRealisasi">
+        </div>
+        <div class="form-group">
+            <label>Keterangan Lapangan</label>
+            <textarea id="editKeterangan" rows="3"></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitEdit()">Simpan ke Google Sheets</button>
+    </div>
+</div>
 
-        let isAdmin = false;
+<script>
+    // Taruh URL Web App yang kamu salin tadi di sini
+    const SCRIPT_URL = "PASTE_URL_WEB_APP_KAMU_DI_SINI"; 
 
-        // Ambil data dari LocalStorage jika sudah pernah ada modifikasi
-        if (localStorage.getItem('sarpras_data')) {
-            workData = JSON.parse(localStorage.getItem('sarpras_data'));
-        }
+    let localData = [];
 
-        function saveData() {
-            localStorage.setItem('sarpras_data', JSON.stringify(workData));
-            renderWorkItems();
-            calculateStats();
-        }
+    // Ganti tab halaman
+    function switchTab(tabId) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
 
-        function calculateStats() {
-            document.getElementById('stat-total').innerText = workData.length;
-            document.getElementById('stat-proses').innerText = workData.filter(i => i.status === 'Proses Lapangan').length;
-            document.getElementById('stat-selesai').innerText = workData.filter(i => i.status === 'Selesai').length;
-            
-            let totalDana = workData.reduce((acc, curr) => acc + parseInt(curr.rab || 0), 0);
-            document.getElementById('stat-dana').innerText = "Rp " + totalDana.toLocaleString('id-ID');
-        }
-
-        function formatBadge(status) {
-            let cls = 'badge-perencanaan';
-            if(status === 'Proses Lapangan') cls = 'badge-proses';
-            if(status === 'Selesai') cls = 'badge-selesai';
-            return `<span class="badge ${cls}">${status}</span>`;
-        }
-
-        function renderWorkItems() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const catFilter = document.getElementById('categoryFilter').value;
-            const statFilter = document.getElementById('statusFilter').value;
-            const tbody = document.getElementById('tableBody');
-            
-            tbody.innerHTML = '';
-
-            workData.forEach((item, index) => {
-                if (item.name.toLowerCase().includes(search) && 
-                    (catFilter === '' || item.category === catFilter) && 
-                    (statFilter === '' || item.status === statFilter)) {
-                    
-                    let tr = document.createElement('tr');
-                    
-                    let driveContent = `<div class="drive-links">`;
-                    if(item.links.awal) driveContent += `<a href="${item.links.awal}" target="_blank">📁 Folder Kondisi Awal</a>`;
-                    if(item.links.proses) driveContent += `<a href="${item.links.proses}" target="_blank">📁 Folder Proses Lapangan</a>`;
-                    if(item.links.akhir) driveContent += `<a href="${item.links.akhir}" target="_blank">📁 Folder Kondisi Akhir</a>`;
-                    if(item.links.nota) driveContent += `<a href="${item.links.nota}" target="_blank">📄 Arsip Kuitansi/Nota</a>`;
-                    if(item.links.rab) driveContent += `<a href="${item.links.rab}" target="_blank">📊 Excel Hitungan RAB</a>`;
-                    driveContent += `</div>`;
-
-                    tr.innerHTML = `
-                        <td style="font-weight:600; color:var(--gray-900);">${item.name}</td>
-                        <td>${item.category}</td>
-                        <td>${formatBadge(item.status)}</td>
-                        <td style="font-size:0.85rem; color:var(--gray-600);">
-                            <strong>Mulai:</strong> ${item.start}<br>
-                            <strong>Target:</strong> ${item.end}
-                        </td>
-                        <td>
-                            <span style="font-weight:600;">Rp ${(parseInt(item.rab)).toLocaleString('id-ID')}</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar ${item.progress == 100 ? 'complete' : ''}" style="width: ${item.progress}%"></div>
-                            </div>
-                            <span style="font-size:0.75rem; color:var(--gray-500); float:right; margin-top:2px;">Fisik: ${item.progress}%</span>
-                        </td>
-                        <td>${driveContent}</td>
-                        <td class="action-cell" style="${isAdmin ? '' : 'display:none;'}">
-                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem;" onclick="editWork(${index})">Ubah</button>
-                            <button class="btn btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.8rem; color:var(--danger); margin-top:4px;" onclick="deleteWork(${index})">Hapus</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                }
+    // Ambil data otomatis saat web dibuka
+    function loadData() {
+        fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(data => {
+                localData = data;
+                renderTable(data);
+                calculateAnalysis(data);
             });
+    }
 
-            if(tbody.innerHTML === '') {
-                tbody.innerHTML = `<tr><td colspan="${isAdmin ? 7 : 6}" style="text-align:center; color:var(--gray-500); padding:2rem;">Tidak ada hasil pekerjaan sarpras yang cocok.</td></tr>`;
-            }
-        }
-
-        function toggleAdminMode() {
-            if(!isAdmin) {
-                let pass = prompt("Masukkan Password Akses Pengurus Sarpras:");
-                if(pass === "sarprasfatih") {
-                    isAdmin = true;
-                    document.getElementById('adminToggleBtn').innerText = "Logout Admin";
-                    document.getElementById('addWorkBtn').style.display = "inline-flex";
-                    document.getElementById('thAksi').style.display = "table-cell";
-                    showToast("Mode Admin Aktif! Anda bisa menambah & mengedit data.");
-                } else if(pass !== null) {
-                    alert("Password salah! Akses ditolak.");
-                }
-            } else {
-                isAdmin = false;
-                document.getElementById('adminToggleBtn').innerText = "Login Admin";
-                document.getElementById('addWorkBtn').style.display = "none";
-                document.getElementById('thAksi').style.display = "none";
-                showToast("Keluar dari Mode Admin.");
-            }
-            renderWorkItems();
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                if(!b.classList.contains('admin-btn')) b.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            if(tab === 'dashboard') {
-                document.getElementById('tab-dashboard').style.display = 'block';
-            } else {
-                document.getElementById('tab-dashboard').style.display = 'none';
-            }
-        }
-
-        function openModal() {
-            document.getElementById('workModal').classList.add('active');
-            document.getElementById('modalTitle').innerText = "Tambah Pekerjaan";
-            document.getElementById('workForm').reset();
-            document.getElementById('editIndex').value = "";
-        }
-
-        function closeModal() {
-            document.getElementById('workModal').classList.remove('active');
-        }
-
-        function editWork(index) {
-            openModal();
-            document.getElementById('modalTitle').innerText = "Ubah Data Pekerjaan";
-            const data = workData[index];
-            document.getElementById('editIndex').value = index;
-            document.getElementById('workName').value = data.name;
-            document.getElementById('workCategory').value = data.category;
-            document.getElementById('workStatus').value = data.status;
-            document.getElementById('startDate').value = data.start;
-            document.getElementById('endDate').value = data.end;
-            document.getElementById('workRab').value = data.rab;
-            document.getElementById('workProgress').value = data.progress;
-            document.getElementById('driveAwal').value = data.links.awal;
-            document.getElementById('driveProses').value = data.links.proses;
-            document.getElementById('driveAkhir').value = data.links.akhir;
-            document.getElementById('driveNota').value = data.links.nota;
-            document.getElementById('driveRab').value = data.links.rab;
-        }
-
-        function deleteWork(index) {
-            if(confirm("Apakah Anda yakin ingin menghapus arsip pekerjaan sarpras ini?")) {
-                workData.splice(index, 1);
-                saveData();
-                showToast("Data pekerjaan berhasil dihapus.");
-            }
-        }
-
-        document.getElementById('workForm').onsubmit = function(e) {
-            e.preventDefault();
-            const idx = document.getElementById('editIndex').value;
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = "";
+        
+        // Looping data dari baris ke-5 dokumen (index 1 di array data yang di-get karena baris 4 judul)
+        // Kita lewati baris pertama dari jembatan script karena itu baris judul/header halaman
+        for(let i = 1; i < data.length; i++) {
+            let row = data[i];
+            if(!row[1] && !row[2]) continue; // Lewati jika baris kosong
             
-            const payload = {
-                name: document.getElementById('workName').value,
-                category: document.getElementById('workCategory').value,
-                status: document.getElementById('workStatus').value,
-                start: document.getElementById('startDate').value,
-                end: document.getElementById('endDate').value,
-                rab: document.getElementById('workRab').value,
-                progress: document.getElementById('workProgress').value,
-                links: {
-                    awal: document.getElementById('driveAwal').value,
-                    proses: document.getElementById('driveProses').value,
-                    akhir: document.getElementById('driveAkhir').value,
-                    nota: document.getElementById('driveNota').value,
-                    rab: document.getElementById('driveRab').value
-                }
-            };
-
-            if(idx === "") {
-                workData.push(payload);
-            } else {
-                workData[idx] = payload;
+            // Cek jika ini baris TOTAL KESELURUHAN
+            if(row[1] === "TOTAL KESELURUHAN ANGGARAN" || row[2] === "TOTAL KESELURUHAN ANGGARAN") {
+                continue; 
             }
 
-            saveData();
-            closeModal();
-            showToast("Perubahan data sarpras berhasil disimpan!");
+            let statusClass = "bg-perencanaan";
+            if(row[3] === "On Going") statusClass = "bg-ongoing";
+            if(row[3] === "Selesai") statusClass = "bg-selesai";
+            if(row[3] === "On Hold") statusClass = "bg-onhold";
+
+            let formatTotal = row[4] ? row[4].toLocaleString('id-ID') : '0';
+            let formatRealisasi = row[5] ? row[5].toLocaleString('id-ID') : '0';
+            let formatSisa = row[6] ? row[6].toLocaleString('id-ID') : '0';
+
+            tbody.innerHTML += `<tr>
+                <td>${row[0]}</td>
+                <td><b>${row[1]}</b></td>
+                <td>${row[2]}</td>
+                <td><span class="badge ${statusClass}">${row[3]}</span></td>
+                <td>Rp${formatTotal}</td>
+                <td>Rp${formatRealisasi}</td>
+                <td>Rp${formatSisa}</td>
+                <td><a href="${row[7]}" target="_blank" style="color:var(--gold); font-weight:bold; text-decoration:none;">Buka RAB</a></td>
+                <td><small>${row[10] || '-'}</small></td>
+                <td><button onclick="openEdit('${row[2]}', '${row[3]}', '${row[5]}', '${row[10]}')" style="cursor:pointer; background:var(--dark); color:white; border:none; padding:5px 10px; border-radius:4px;">Edit</button></td>
+            </tr>`;
+        }
+    }
+
+    // Fungsi hitung Analisa & Rangkuman otomatis
+    function calculateAnalysis(data) {
+        let totalAnggaran = 0;
+        let totalRealisasi = 0;
+        let statusCount = { "Selesai": 0, "On Going": 0, "On Hold": 0, "Perencanaan": 0 };
+
+        for(let i = 1; i < data.length; i++) {
+            let row = data[i];
+            if(!row[2]) continue;
+            if(row[1] === "TOTAL KESELURUHAN ANGGARAN" || row[2] === "TOTAL KESELURUHAN ANGGARAN") continue;
+
+            totalAnggaran += Number(row[4]) || 0;
+            totalRealisasi += Number(row[5]) || 0;
+            if(statusCount[row[3]] !== undefined) {
+                statusCount[row[3]]++;
+            }
+        }
+
+        let sisaSemua = totalAnggaran - totalRealisasi;
+        document.getElementById('totalBudgetInfo').innerHTML = `
+            <b>Total Anggaran Terencana:</b> Rp ${totalAnggaran.toLocaleString('id-ID')}<br>
+            <b>Total Realisasi Saat Ini:</b> Rp ${totalRealisasi.toLocaleString('id-ID')}<br>
+            <b>Sisa Anggaran Efektif:</b> Rp ${sisaSemua.toLocaleString('id-ID')}
+        `;
+
+        let totalProject = statusCount["Selesai"] + statusCount["On Going"] + statusCount["On Hold"] + statusCount["Perencanaan"];
+        let persenSelesai = ((statusCount["Selesai"] / totalProject) * 100).toFixed(1);
+
+        document.getElementById('analisaList').innerHTML = `
+            <li><b>Total Project Terdata:</b> ${totalProject} Kegiatan</li>
+            <li><b>Selesai:</b> ${statusCount["Selesai"]} pekerjaan (${persenSelesai}% dari total program)</li>
+            <li><b>Sedang Berjalan (On Going):</b> ${statusCount["On Going"]} pekerjaan</li>
+            <li><b>Tertunda (On Hold):</b> ${statusCount["On Hold"]} pekerjaan</li>
+            <li><b>Tahap Perencanaan:</b> ${statusCount["Perencanaan"]} pekerjaan</li>
+        `;
+    }
+
+    // Buka jendela edit
+    function openEdit(nama, status, realisasi, keterangan) {
+        document.getElementById('editModal').style.display = 'flex';
+        document.getElementById('oldName').value = nama;
+        document.getElementById('editNama').value = nama;
+        document.getElementById('editStatus').value = status;
+        document.getElementById('editRealisasi').value = Number(realisasi) || 0;
+        document.getElementById('editKeterangan').value = keterangan === "undefined" ? "" : keterangan;
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    // Kirim perubahan data ke Google Sheets
+    function submitEdit() {
+        const btn = document.querySelector('.btn-submit');
+        btn.innerHTML = "Menyimpan ke Sheets...";
+        btn.disabled = true;
+
+        const dataUpdate = {
+            action: 'edit',
+            oldName: document.getElementById('oldName').value,
+            status: document.getElementById('editStatus').value,
+            realisasi: document.getElementById('editRealisasi').value,
+            keterangan: document.getElementById('editKeterangan').value
         };
 
-        function showToast(msg) {
-            const t = document.getElementById('toastMessage');
-            t.innerText = msg;
-            t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 3000);
-        }
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(dataUpdate)
+        }).then(() => {
+            alert("Data berhasil diupdate di Google Sheets!");
+            closeModal();
+            location.reload();
+        }).catch(err => {
+            alert("Gagal menyimpan data.");
+            btn.innerHTML = "Simpan ke Google Sheets";
+            btn.disabled = false;
+        });
+    }
 
-        function exportToPDF() {
-            const element = document.querySelector('main');
-            const opt = {
-                margin:       0.5,
-                filename:     'Laporan_Monitoring_Sarpras_AlFatih.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        document.getElementById('searchInput').oninput = renderWorkItems;
-        document.getElementById('categoryFilter').onchange = renderWorkItems;
-        document.getElementById('statusFilter').onchange = renderWorkItems;
-
-        // Inisialisasi awal
-        calculateStats();
-        renderWorkItems();
-    </script>
+    // Jalankan load data saat halaman web selesai terbuka
+    window.onload = loadData;
+</script>
 </body>
 </html>
