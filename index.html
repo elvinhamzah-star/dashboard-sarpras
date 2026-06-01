@@ -20,16 +20,17 @@
         
         .container { max-width: 1500px; margin: auto; background: var(--white); padding: 30px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         
-        /* Header & Logo Optimization */
-        .header-section { border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 24px; }
+        /* Header & Logo */
+        .header-section { border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 24px; }
         .header-logo { width: 110px; height: auto; max-height: 110px; object-fit: contain; }
         .header-text h2 { font-size: 28px; color: var(--dark); margin-bottom: 6px; }
         .header-text p { color: var(--muted); font-size: 14px; line-height: 1.4; }
 
-        /* Navigation Tabs */
+        /* Navigation Tabs - Sekarang Berada Tepat di Bawah Header */
         .tabs { display: flex; gap: 10px; margin-bottom: 25px; background: #f1f5f9; padding: 6px; border-radius: 10px; width: fit-content; }
         .tab-btn { padding: 10px 24px; border: none; background: transparent; cursor: pointer; border-radius: 8px; font-weight: 600; font-size: 14px; color: var(--muted); transition: 0.3s; white-space: nowrap; }
         .tab-btn.active { background: var(--white); color: var(--dark); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        
         .panel { display: none; }
         .panel.active { display: block; }
 
@@ -80,7 +81,6 @@
         .notes-box ul { padding-left: 20px; }
         .notes-box li { margin-bottom: 12px; line-height: 1.6; color: #334155; font-size: 14px; }
 
-        /* Responsive Notice */
         .responsive-notice { display: none; background: #fff8e1; border: 1px solid #ffe082; color: #b78103; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 15px; text-align: center; }
 
         /* Modals */
@@ -102,8 +102,6 @@
         @media (max-width: 1024px) {
             body { padding: 15px; }
             .container { padding: 20px; }
-            .cards { grid-template-columns: repeat(2, 1fr); }
-            .scope-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
         @media (max-width: 768px) {
@@ -126,6 +124,7 @@
 <body>
 
 <div class="container">
+    <!-- Header -->
     <div class="header-section">
         <img src="logo.png" alt="Logo Al-Fatih" class="header-logo">
         <div class="header-text">
@@ -134,52 +133,57 @@
         </div>
     </div>
     
-    <h3 class="section-title">📊 Ringkasan Finansial Sarpras</h3>
-    <div class="cards">
-        <div class="card">
-            <div class="card-label">Total Anggaran Terencana</div>
-            <div class="card-value" id="cardTotalAnggaran">Rp 0</div>
-        </div>
-        <div class="card">
-            <div class="card-label">Total Realisasi Saat Ini</div>
-            <div class="card-value" id="cardTotalRealisasi" style="color: #0369a1;">Rp 0</div>
-        </div>
-        <div class="card">
-            <div class="card-label">Sisa Anggaran Efektif</div>
-            <div class="card-value" id="cardSisaAnggaran" style="color: #15803d;">Rp 0</div>
-        </div>
-    </div>
-
-    <h3 class="section-title">🏗️ Cakupan Progres Lapangan</h3>
-    <div class="scope-grid">
-        <div class="scope-item">
-            <h4>Total Pekerjaan</h4>
-            <p id="scopeTotal">0</p>
-        </div>
-        <div class="scope-item">
-            <h4>Selesai (100%)</h4>
-            <p id="scopeSelesai" style="color: #15803d;">0</p>
-        </div>
-        <div class="scope-item">
-            <h4>On Going</h4>
-            <p id="scopeOngoing" style="color: #0369a1;">0</p>
-        </div>
-        <div class="scope-item">
-            <h4>On Hold</h4>
-            <p id="scopeOnhold" style="color: var(--red-dark);">0</p>
-        </div>
-        <div class="scope-item">
-            <h4>Tahap Perencanaan</h4>
-            <p id="scopePerencanaan" style="color: #475569;">0</p>
-        </div>
-    </div>
-
+    <!-- Navigasi Tampilan Bawah Judul Header (Sesuai Screenshot 2026-06-01 at 13.15.34.jpg) -->
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('dashboard')">Tampilan Tabel (Desktop)</button>
-        <button class="tab-btn" onclick="switchTab('progress-kartu')">Tampilan Kartu (Mobile)</button>
-        <button class="tab-btn" onclick="switchTab('rangkuman')">Catatan Analisa</button>
+        <button id="btnTabDashboard" class="tab-btn active" onclick="switchTab('dashboard')">Tampilan Tabel (Desktop)</button>
+        <button id="btnTabKartu" class="tab-btn" onclick="switchTab('progress-kartu')">Tampilan Kartu (Mobile)</button>
+        <button id="btnTabRangkuman" class="tab-btn" onclick="switchTab('rangkuman')">Catatan Analisa</button>
     </div>
 
+    <!-- Kontainer Penampung Ringkasan Global -->
+    <div id="globalSummaryContainer">
+        <h3 class="section-title">📊 Ringkasan Finansial Sarpras</h3>
+        <div class="cards">
+            <div class="card">
+                <div class="card-label">Total Anggaran Terencana</div>
+                <div class="card-value" id="cardTotalAnggaran">Rp 0</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Total Realisasi Saat Ini</div>
+                <div class="card-value" id="cardTotalRealisasi" style="color: #0369a1;">Rp 0</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Sisa Anggaran Efektif</div>
+                <div class="card-value" id="cardSisaAnggaran" style="color: #15803d;">Rp 0</div>
+            </div>
+        </div>
+
+        <h3 class="section-title">🏗️ Cakupan Progres Lapangan</h3>
+        <div class="scope-grid">
+            <div class="scope-item">
+                <h4>Total Pekerjaan</h4>
+                <p id="scopeTotal">0</p>
+            </div>
+            <div class="scope-item">
+                <h4>Selesai (100%)</h4>
+                <p id="scopeSelesai" style="color: #15803d;">0</p>
+            </div>
+            <div class="scope-item">
+                <h4>On Going</h4>
+                <p id="scopeOngoing" style="color: #0369a1;">0</p>
+            </div>
+            <div class="scope-item">
+                <h4>On Hold</h4>
+                <p id="scopeOnhold" style="color: var(--red-dark);">0</p>
+            </div>
+            <div class="scope-item">
+                <h4>Tahap Perencanaan</h4>
+                <p id="scopePerencanaan" style="color: #475569;">0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 1: Mode Tabel Desktop -->
     <div id="dashboard" class="panel active">
         <div class="responsive-notice">
             💡 Layar HP terdeteksi. Silakan beralih ke tab <b>"Tampilan Kartu (Mobile)"</b> untuk format yang lebih rapi.
@@ -207,12 +211,14 @@
         </div>
     </div>
 
+    <!-- Tab 2: Mode Card Vertikal -->
     <div id="progress-kartu" class="panel">
         <div id="mobileCards" class="mobile-cards-container">
             <p style="text-align: center; color: var(--muted); padding: 30px;">Memuat data kartu...</p>
         </div>
     </div>
 
+    <!-- Tab 3: Catatan Analisa -->
     <div id="rangkuman" class="panel">
         <div class="notes-box">
             <ul id="analisaList">
@@ -222,6 +228,7 @@
     </div>
 </div>
 
+<!-- Modal Form Edit & Detail Viewer (Tetap Sama) -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <button class="btn-close" onclick="closeModal('editModal')">Tutup</button>
@@ -257,17 +264,14 @@
         <button class="btn-close" onclick="closeModal('detailModal')">Tutup</button>
         <h3 id="detailTitle" style="margin-bottom: 5px; font-size: 18px;">Detail Informasi Program</h3>
         <p id="detailProgramGroup" style="font-size: 13px; color: var(--gold); font-weight: 600; margin-bottom: 15px; text-transform: uppercase;"></p>
-        
         <div class="form-group" style="margin-bottom: 15px;">
             <label>Status Saat Ini</label>
             <span id="detailStatusBadge" class="badge"></span>
         </div>
-
         <div class="form-group" id="mainDetailContentGroup">
             <label id="detailContentLabel">Catatan Progress Lapangan :</label>
             <div id="detailDynamicContainer"></div>
         </div>
-
         <div class="form-group" id="fileAttachmentGroup">
             <label>Berkas & File Pendukung Dokumen :</label>
             <div id="detailDocList" class="doc-list-container"></div>
@@ -279,15 +283,21 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXtJVtGIOEG-eQ42AdALNQllyRNDH6qPGgxPBiIJwUbDYmrm6q8IfLgG-IQvxmTCRmCw/exec"; 
     let localData = [];
 
+    // Fungsi Switch Tab Sesuai Peletakan Baru
     function switchTab(tabId) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
         document.getElementById(tabId).classList.add('active');
         
-        const clickedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => 
-            btn.getAttribute('onclick').includes(tabId)
-        );
-        if(clickedBtn) clickedBtn.classList.add('active');
+        if (tabId === 'dashboard') document.getElementById('btnTabDashboard').classList.add('active');
+        if (tabId === 'progress-kartu') document.getElementById('btnTabKartu').classList.add('active');
+        if (tabId === 'rangkuman') document.getElementById('btnTabRangkuman').classList.add('active');
+
+        // Pindahkan Box Ringkasan Finansial ke dalam Tab aktif saat ini agar rapi
+        const summaryBox = document.getElementById('globalSummaryContainer');
+        const targetPanel = document.getElementById(tabId);
+        targetPanel.insertBefore(summaryBox, targetPanel.firstChild);
     }
 
     function loadData() {
@@ -297,6 +307,8 @@
                 localData = data;
                 renderDataContent(data);
                 calculateAnalysis(data);
+                // Pastikan susunan letak default langsung rapi di awal muat halaman
+                switchTab('dashboard');
             }).catch(err => {
                 document.getElementById('tableBody').innerHTML = `<tr><td colspan="10" style="text-align:center; color:red;">Gagal memuat data.</td></tr>`;
             });
@@ -336,14 +348,17 @@
             if(row.status === "Selesai") statusClass = "bg-selesai";
             if(row.status === "On Hold") statusClass = "bg-onhold";
 
-            // PERBAIKAN UTAMA: Pemetaan key dari variabel Sheets (Membaca kolom rab, dokumentasi, bukti secara presisi)
-            let linkRab = row.rab || row.RAB || "";
-            let linkDok = row.dokumentasi || row.Dokumentasi || row.dok || "";
-            let linkBukti = row.bukti || row.Bukti || "";
+            // 🛠️ PERBAIKAN TOTAL SYSTEM LINK DRIVE:
+            // Mengambil data berdasarkan teks properti fleksibel ATAU jika gagal, dibaca manual lewat konversi Object values.
+            let rawValues = Object.values(row);
+            
+            let linkRab = row.rab || row.RAB || row["Tautan RAB"] || (rawValues[7] ? rawValues[7].toString() : "");
+            let linkDok = row.dokumentasi || row.Dokumentasi || row.dok || row["Tautan Dokumentasi"] || (rawValues[8] ? rawValues[8].toString() : "");
+            let linkBukti = row.bukti || row.Bukti || row["Tautan Bukti Transaksi"] || (rawValues[9] ? rawValues[9].toString() : "");
 
-            let btnRab = (linkRab && linkRab !== "#" && linkRab.trim() !== "") ? `<a class="link-btn" href="${linkRab}" target="_blank">📂 RAB</a>` : `<span class="link-disabled">📂 RAB</span>`;
-            let btnDok = (linkDok && linkDok !== "#" && linkDok.trim() !== "") ? `<a class="link-btn" href="${linkDok}" target="_blank">📸 Dok</a>` : `<span class="link-disabled">📸 Dok</span>`;
-            let btnBukti = (linkBukti && linkBukti !== "#" && linkBukti.trim() !== "") ? `<a class="link-btn" href="${linkBukti}" target="_blank">🧾 Bukti</a>` : `<span class="link-disabled">🧾 Bukti</span>`;
+            let btnRab = (linkRab && linkRab.startsWith("http")) ? `<a class="link-btn" href="${linkRab.trim()}" target="_blank">📂 RAB</a>` : `<span class="link-disabled">📂 RAB</span>`;
+            let btnDok = (linkDok && linkDok.startsWith("http")) ? `<a class="link-btn" href="${linkDok.trim()}" target="_blank">📸 Dok</a>` : `<span class="link-disabled">📸 Dok</span>`;
+            let btnBukti = (linkBukti && linkBukti.startsWith("http")) ? `<a class="link-btn" href="${linkBukti.trim()}" target="_blank">🧾 Bukti</a>` : `<span class="link-disabled">🧾 Bukti</span>`;
 
             let ketRaw = row.keterangan || "-";
             let ketTampil = ketRaw.length > 50 ? ketRaw.substring(0, 47) + "..." : ketRaw;
