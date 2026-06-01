@@ -126,8 +126,8 @@
 </div>
 
 <script>
-    // URL Web App terbaru kamu yang sudah aktif
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyPSNYSt2g-c9k_uELNWuBXWHEGbQvNlnZqnA9Lh1VJDPf6l4QeD2r1Ppj7WRghDYcmRw/exec"; 
+    // URL Web App terbaru kamu yang sudah 100% aktif dan terbuka
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXtJVtGIOEG-eQ42AdALNQllyRNDH6qPGgxPBiIJwUbDYmrm6q8IfLgG-IQvxmTCRmCw/exec"; 
 
     let localData = [];
 
@@ -199,3 +199,80 @@
             let row = data[i];
             if(!row.nama) continue;
             if(row.program.includes("TOTAL") || row.nama.includes("TOTAL")) continue;
+
+            let numTotal = Number(row.total.replace(/[^0-9,-]+/g,"").replace(",", "."));
+            let numRealisasi = Number(row.realisasi.replace(/[^0-9,-]+/g,"").replace(",", "."));
+
+            totalAnggaran += numTotal || 0;
+            totalRealisasi += numRealisasi || 0;
+            
+            if(statusCount[row.status] !== undefined) {
+                statusCount[row.status]++;
+            }
+        }
+
+        let sisaSemua = totalAnggaran - totalRealisasi;
+        document.getElementById('totalBudgetInfo').innerHTML = `
+            <b>Total Anggaran Terencana:</b> Rp ${totalAnggaran.toLocaleString('id-ID')}<br>
+            <b>Total Realisasi Saat Ini:</b> Rp ${totalRealisasi.toLocaleString('id-ID')}<br>
+            <b>Sisa Anggaran Efektif:</b> Rp ${sisaSemua.toLocaleString('id-ID')}
+        `;
+
+        let totalProject = statusCount["Selesai"] + statusCount["On Going"] + statusCount["On Hold"] + statusCount["Perencanaan"];
+        let persenSelesai = totalProject > 0 ? ((statusCount["Selesai"] / totalProject) * 100).toFixed(1) : 0;
+
+        document.getElementById('analisaList').innerHTML = `
+            <li><b>Total Project Terdata:</b> ${totalProject} Kegiatan</li>
+            <li><b>Selesai:</b> ${statusCount["Selesai"]} pekerjaan (${persenSelesai}% dari total program)</li>
+            <li><b>Sedang Berjalan (On Going):</b> ${statusCount["On Going"]} pekerjaan</li>
+            <li><b>Tertunda (On Hold):</b> ${statusCount["On Hold"]} pekerjaan</li>
+            <li><b>Tahap Perencanaan:</b> ${statusCount["Perencanaan"]} pekerjaan</li>
+        `;
+    }
+
+    function openEdit(nama, status, realisasi, keterangan) {
+        document.getElementById('editModal').style.display = 'flex';
+        document.getElementById('oldName').value = nama;
+        document.getElementById('editNama').value = nama;
+        document.getElementById('editStatus').value = status;
+        
+        let cleanRealisasi = Number(realisasi.replace(/[^0-9,-]+/g,"").replace(",", "."));
+        document.getElementById('editRealisasi').value = cleanRealisasi || 0;
+        document.getElementById('editKeterangan').value = (keterangan === "undefined" || keterangan === "-") ? "" : keterangan;
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    function submitEdit() {
+        const btn = document.querySelector('.btn-submit');
+        btn.innerHTML = "Menyimpan ke Sheets...";
+        btn.disabled = true;
+
+        const dataUpdate = {
+            oldName: document.getElementById('oldName').value,
+            status: document.getElementById('editStatus').value,
+            realisasi: document.getElementById('editRealisasi').value,
+            keterangan: document.getElementById('editKeterangan').value
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(dataUpdate)
+        }).then(() => {
+            alert("Data berhasil diupdate di Google Sheets!");
+            closeModal();
+            location.reload();
+        }).catch(err => {
+            alert("Gagal menyimpan data.");
+            btn.innerHTML = "Simpan ke Google Sheets";
+            btn.disabled = false;
+        });
+    }
+
+    window.onload = loadData;
+</script>
+</body>
+</html>
