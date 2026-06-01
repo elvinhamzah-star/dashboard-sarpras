@@ -1,144 +1,16 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Monitoring Sarpras</title>
-    <style>
-        :root {
-            --gold: #D4AF37;
-            --dark: #222;
-            --bg: #f7f5f0;
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--dark); }
-        .container { max-width: 1400px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-top: 0; }
-        
-        /* Navigasi Tab */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { padding: 10px 20px; border: none; background: #e0e0e0; cursor: pointer; border-radius: 6px; font-weight: bold; transition: 0.3s; }
-        .tab-btn.active { background: var(--gold); color: white; }
-        .panel { display: none; }
-        .panel.active { display: block; }
-
-        /* Gaya Tabel */
-        .table-container { overflow-x: auto; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-        th { background: var(--dark); color: white; padding: 12px 10px; font-weight: 600; }
-        td { padding: 10px; border-bottom: 1px solid #ddd; }
-        tr:hover { background-color: #f9f6f0; }
-        
-        /* Badge Status */
-        .badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; display: inline-block; }
-        .bg-ongoing { background-color: #0052cc; }
-        .bg-selesai { background-color: #00875a; }
-        .bg-onhold { background-color: #de350b; }
-        .bg-perencanaan { background-color: #42526e; }
-
-        /* Form Edit Popup/Overlay */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn-submit { background: var(--gold); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
-        .btn-close { background: #888; color: white; border: none; padding: 5px 10px; float: right; cursor: pointer; border-radius: 4px; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>Monitoring Maintenance Sarpras Al-Fatih</h2>
-    
-    <!-- Menu Pilihan Halaman -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard Data</button>
-        <button class="tab-btn" onclick="switchTab('rangkuman')">Rangkuman & Analisa</button>
-    </div>
-
-    <!-- Halaman 1: Tabel Utama -->
-    <div id="dashboard" class="panel active">
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Program</th>
-                        <th>Nama Pekerjaan</th>
-                        <th>Status</th>
-                        <th>Total Anggaran</th>
-                        <th>Realisasi</th>
-                        <th>Sisa</th>
-                        <th>Link Detail</th>
-                        <th>Keterangan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr><td colspan="10" style="text-align:center;">Sedang memuat data dari laboratorium...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Halaman 2: Rangkuman & Analisa Otomatis -->
-    <div id="rangkuman" class="panel">
-        <h3>Rangkuman Realisasi Anggaran</h3>
-        <p id="totalBudgetInfo">Menghitung total...</p>
-        <hr>
-        <h3>Analisa Progres Lapangan</h3>
-        <ul id="analisaList">
-            <li>Menghitung persentase progres...</li>
-        </ul>
-    </div>
-</div>
-
-<!-- Jendela Popup untuk Edit Data -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <button class="btn-close" onclick="closeModal()">X</button>
-        <h3>Edit Progress Pekerjaan</h3>
-        <input type="hidden" id="oldName">
-        <div class="form-group">
-            <label>Nama Pekerjaan</label>
-            <input type="text" id="editNama" disabled style="background: #eee;">
-        </div>
-        <div class="form-group">
-            <label>Status</label>
-            <select id="editStatus">
-                <option value="Perencanaan">Perencanaan</option>
-                <option value="On Going">On Going</option>
-                <option value="On Hold">On Hold</option>
-                <option value="Selesai">Selesai</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Realisasi Anggaran (Rp)</label>
-            <input type="number" id="editRealisasi">
-        </div>
-        <div class="form-group">
-            <label>Keterangan Lapangan</label>
-            <textarea id="editKeterangan" rows="3"></textarea>
-        </div>
-        <button class="btn-submit" onclick="submitEdit()">Simpan ke Google Sheets</button>
-    </div>
-</div>
-
 <script>
-    // Taruh URL Web App yang kamu salin tadi di sini
-    const SCRIPT_URL = "PASTE_URL_WEB_APP_KAMU_DI_SINI"; 
+    // URL Web App baru kamu sudah terpasang di sini
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyPSNYSt2g-c9k_uELNWuBXWHEGbQvNlnZqnA9Lh1VJDPf6l4QeD2r1Ppj7WRghDYcmRw/exec"; 
 
     let localData = [];
 
-    // Ganti tab halaman
     function switchTab(tabId) {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
     }
 
-    // Ambil data otomatis saat web dibuka
     function loadData() {
         fetch(SCRIPT_URL)
             .then(res => res.json())
@@ -146,6 +18,8 @@
                 localData = data;
                 renderTable(data);
                 calculateAnalysis(data);
+            }).catch(err => {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="10" style="text-align:center; color:red;">Gagal memuat data: ${err}</td></tr>`;
             });
     }
 
@@ -153,42 +27,40 @@
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = "";
         
-        // Looping data dari baris ke-5 dokumen (index 1 di array data yang di-get karena baris 4 judul)
-        // Kita lewati baris pertama dari jembatan script karena itu baris judul/header halaman
+        // Loop dimulai dari indeks 1 karena indeks 0 berisi judul header baris ke-4
         for(let i = 1; i < data.length; i++) {
             let row = data[i];
-            if(!row[1] && !row[2]) continue; // Lewati jika baris kosong
-            
-            // Cek jika ini baris TOTAL KESELURUHAN
-            if(row[1] === "TOTAL KESELURUHAN ANGGARAN" || row[2] === "TOTAL KESELURUHAN ANGGARAN") {
-                continue; 
-            }
+            if(!row.program && !row.nama) continue; 
+            if(row.program.includes("TOTAL") || row.nama.includes("TOTAL")) continue; 
 
             let statusClass = "bg-perencanaan";
-            if(row[3] === "On Going") statusClass = "bg-ongoing";
-            if(row[3] === "Selesai") statusClass = "bg-selesai";
-            if(row[3] === "On Hold") statusClass = "bg-onhold";
+            if(row.status === "On Going") statusClass = "bg-ongoing";
+            if(row.status === "Selesai") statusClass = "bg-selesai";
+            if(row.status === "On Hold") statusClass = "bg-onhold";
 
-            let formatTotal = row[4] ? row[4].toLocaleString('id-ID') : '0';
-            let formatRealisasi = row[5] ? row[5].toLocaleString('id-ID') : '0';
-            let formatSisa = row[6] ? row[6].toLocaleString('id-ID') : '0';
+            let btnRab = (row.rab && row.rab !== "#") ? `<a class="link-btn" href="${row.rab}" target="_blank">📂 RAB</a>` : `<span class="link-disabled">📂 RAB</span>`;
+            let btnDok = (row.dokumentasi && row.dokumentasi !== "#") ? `<a class="link-btn" href="${row.dokumentasi}" target="_blank">📸 Dok</a>` : `<span class="link-disabled">📸 Dok</span>`;
+            let btnBukti = (row.bukti && row.bukti !== "#") ? `<a class="link-btn" href="${row.bukti}" target="_blank">🧾 Bukti</a>` : `<span class="link-disabled">🧾 Bukti</span>`;
 
             tbody.innerHTML += `<tr>
-                <td>${row[0]}</td>
-                <td><b>${row[1]}</b></td>
-                <td>${row[2]}</td>
-                <td><span class="badge ${statusClass}">${row[3]}</span></td>
-                <td>Rp${formatTotal}</td>
-                <td>Rp${formatRealisasi}</td>
-                <td>Rp${formatSisa}</td>
-                <td><a href="${row[7]}" target="_blank" style="color:var(--gold); font-weight:bold; text-decoration:none;">Buka RAB</a></td>
-                <td><small>${row[10] || '-'}</small></td>
-                <td><button onclick="openEdit('${row[2]}', '${row[3]}', '${row[5]}', '${row[10]}')" style="cursor:pointer; background:var(--dark); color:white; border:none; padding:5px 10px; border-radius:4px;">Edit</button></td>
+                <td>${row.no || i}</td>
+                <td><b>${row.program}</b></td>
+                <td>${row.nama}</td>
+                <td><span class="badge ${statusClass}">${row.status}</span></td>
+                <td>${row.total}</td>
+                <td>${row.realisasi || 'Rp0'}</td>
+                <td>${row.sisa}</td>
+                <td>
+                    <div style="display:flex; flex-direction:column; gap:2px;">
+                        ${btnRab} ${btnDok} ${btnBukti}
+                    </div>
+                </td>
+                <td><small>${row.keterangan || '-'}</small></td>
+                <td><button onclick="openEdit('${row.nama}', '${row.status}', '${row.realisasi}', '${row.keterangan}')" style="cursor:pointer; background:var(--dark); color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">Edit</button></td>
             </tr>`;
         }
     }
 
-    // Fungsi hitung Analisa & Rangkuman otomatis
     function calculateAnalysis(data) {
         let totalAnggaran = 0;
         let totalRealisasi = 0;
@@ -196,13 +68,17 @@
 
         for(let i = 1; i < data.length; i++) {
             let row = data[i];
-            if(!row[2]) continue;
-            if(row[1] === "TOTAL KESELURUHAN ANGGARAN" || row[2] === "TOTAL KESELURUHAN ANGGARAN") continue;
+            if(!row.nama) continue;
+            if(row.program.includes("TOTAL") || row.nama.includes("TOTAL")) continue;
 
-            totalAnggaran += Number(row[4]) || 0;
-            totalRealisasi += Number(row[5]) || 0;
-            if(statusCount[row[3]] !== undefined) {
-                statusCount[row[3]]++;
+            let numTotal = Number(row.total.replace(/[^0-9,-]+/g,"").replace(",", "."));
+            let numRealisasi = Number(row.realisasi.replace(/[^0-9,-]+/g,"").replace(",", "."));
+
+            totalAnggaran += numTotal || 0;
+            totalRealisasi += numRealisasi || 0;
+            
+            if(statusCount[row.status] !== undefined) {
+                statusCount[row.status]++;
             }
         }
 
@@ -214,7 +90,7 @@
         `;
 
         let totalProject = statusCount["Selesai"] + statusCount["On Going"] + statusCount["On Hold"] + statusCount["Perencanaan"];
-        let persenSelesai = ((statusCount["Selesai"] / totalProject) * 100).toFixed(1);
+        let persenSelesai = totalProject > 0 ? ((statusCount["Selesai"] / totalProject) * 100).toFixed(1) : 0;
 
         document.getElementById('analisaList').innerHTML = `
             <li><b>Total Project Terdata:</b> ${totalProject} Kegiatan</li>
@@ -225,28 +101,27 @@
         `;
     }
 
-    // Buka jendela edit
     function openEdit(nama, status, realisasi, keterangan) {
         document.getElementById('editModal').style.display = 'flex';
         document.getElementById('oldName').value = nama;
         document.getElementById('editNama').value = nama;
         document.getElementById('editStatus').value = status;
-        document.getElementById('editRealisasi').value = Number(realisasi) || 0;
-        document.getElementById('editKeterangan').value = keterangan === "undefined" ? "" : keterangan;
+        
+        let cleanRealisasi = Number(realisasi.replace(/[^0-9,-]+/g,"").replace(",", "."));
+        document.getElementById('editRealisasi').value = cleanRealisasi || 0;
+        document.getElementById('editKeterangan').value = (keterangan === "undefined" || keterangan === "-") ? "" : keterangan;
     }
 
     function closeModal() {
         document.getElementById('editModal').style.display = 'none';
     }
 
-    // Kirim perubahan data ke Google Sheets
     function submitEdit() {
         const btn = document.querySelector('.btn-submit');
         btn.innerHTML = "Menyimpan ke Sheets...";
         btn.disabled = true;
 
         const dataUpdate = {
-            action: 'edit',
             oldName: document.getElementById('oldName').value,
             status: document.getElementById('editStatus').value,
             realisasi: document.getElementById('editRealisasi').value,
@@ -268,8 +143,5 @@
         });
     }
 
-    // Jalankan load data saat halaman web selesai terbuka
     window.onload = loadData;
 </script>
-</body>
-</html>
