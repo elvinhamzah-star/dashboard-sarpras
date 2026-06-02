@@ -1,22 +1,40 @@
-const SCRIPT_URL = https://script.google.com/macros/s/AKfycbxdbl-HUmPa6M1OD5lOm23aw-fGkk59-M1HHZL4QDRphy48Yjt_h2a8EY6vJ7qn10W43w/exec; 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdbl-HUmPa6M1OD5IOm23aw-fGkk59-M1HHZL4QDRphy48Yjt_h2a8EY6vJ7qn10W43w/exec';
 
 window.onload = function() {
-  fetch(SCRIPT_URL)
-    .then(res => res.json())
-    .then(data => {
-      // Data asli mulai dari baris ke-5 (indeks 4)
-      const isiData = data.slice(4); 
-      console.log("Data berhasil ditarik:", isiData);
-      
-      // Hitung total dan isi dashboard
-      let totalAnggaran = 0;
-      isiData.forEach(row => {
-        // row[5] adalah kolom Anggaran, row[6] adalah kolom Realisasi
-        totalAnggaran += parseFloat(row[5].replace(/[^0-9]/g, '')) || 0;
-      });
-      
-      // Update tampilan (Pastikan ID di HTML sama persis)
-      document.getElementById('cardTotalAnggaran').innerText = "Rp " + totalAnggaran.toLocaleString('id-ID');
-    })
-    .catch(err => alert("Gagal mengambil data: " + err));
+    fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+            // Kita ambil data mulai dari baris ke-5 (indeks 4)
+            const isiData = data.slice(4); 
+            
+            let totalAnggaran = 0;
+            let totalRealisasi = 0;
+
+            // Loop untuk menghitung angka-angka di atas
+            isiData.forEach(row => {
+                // row[5] = Anggaran, row[6] = Realisasi
+                // Kita bersihkan dulu datanya (hapus Rp, titik, koma)
+                let ang = parseFloat(row[5].toString().replace(/[^0-9]/g, '')) || 0;
+                let rel = parseFloat(row[6].toString().replace(/[^0-9]/g, '')) || 0;
+                
+                totalAnggaran += ang;
+                totalRealisasi += rel;
+            });
+
+            // Update Angka di Dashboard (Pastikan ID di HTML sama)
+            if(document.getElementById('cardTotalAnggaran')) 
+                document.getElementById('cardTotalAnggaran').innerText = "Rp " + totalAnggaran.toLocaleString('id-ID');
+            
+            if(document.getElementById('cardTotalRealisasi')) 
+                document.getElementById('cardTotalRealisasi').innerText = "Rp " + totalRealisasi.toLocaleString('id-ID');
+                
+            if(document.getElementById('cardSisaAnggaran')) 
+                document.getElementById('cardSisaAnggaran').innerText = "Rp " + (totalAnggaran - totalRealisasi).toLocaleString('id-ID');
+
+            console.log("Dashboard berhasil diperbarui!");
+        })
+        .catch(err => {
+            console.error("Gagal ambil data:", err);
+            alert("Gagal memuat data dari Sheets. Cek Konsol!");
+        });
 };
