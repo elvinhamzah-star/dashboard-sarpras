@@ -1,1679 +1,1090 @@
-<script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbxdbl-HUmPa6M1OD5lOm23aw-fGkk59-M1HHZL4QDRphy48Yjt_h2a8EY6vJ7qn10W43w/exec';
-const LOGO_SRC = 'logo.png';
+<!DOCTYPE html>
+<html lang="id">
 
-let state = {
-    master: [],
-    timeline: [],
-    realisasi: [],
-    pengajuan: [],
-    dokumentasi: []
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard Monitoring Sarpras Madrasah Al-Fatih</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+:root{
+    --primary:#0F4C81;
+    --secondary:#2C7A7B;
+    --accent:#F4B942;
+
+    --bg:#F5F7FA;
+    --card:#FFFFFF;
+
+    --success:#16A34A;
+    --warning:#EA580C;
+    --danger:#DC2626;
+
+    --text:#1E293B;
+    --muted:#64748B;
+    --border:#E2E8F0;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* ======================
+HEADER
+====================== */
+
+header{
+    background:white;
+    border-bottom:1px solid var(--border);
+    padding:15px 20px;
+    position:sticky;
+    top:0;
+    z-index:999;
+}
+
+.header-wrap{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.logo{
+    width:60px;
+    height:60px;
+    object-fit:contain;
+}
+
+.title-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.title-group h1{
+    font-size:24px;
+    color:var(--primary);
+}
+
+.title-group p{
+    font-size:13px;
+    color:var(--muted);
+}
+
+/* ======================
+TAB
+====================== */
+
+.tabs{
+    margin-top:15px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.tab-btn{
+    border:none;
+    cursor:pointer;
+    padding:10px 16px;
+    border-radius:10px;
+    background:#E2E8F0;
+    font-weight:600;
+}
+
+.tab-btn.active{
+    background:var(--primary);
+    color:white;
+}
+
+/* ======================
+LAYOUT
+====================== */
+
+.container{
+    max-width:1400px;
+    margin:auto;
+    padding:20px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+/* ======================
+KPI
+====================== */
+
+.kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+    margin-bottom:20px;
+}
+
+.kpi-card{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.kpi-title{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.kpi-value{
+    margin-top:8px;
+    font-size:28px;
+    font-weight:700;
+    color:var(--primary);
+}
+
+/* ======================
+CARD
+====================== */
+
+.card{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.grid-3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+/* ======================
+OPERASIONAL CARD
+====================== */
+
+.job-card{
+    background:white;
+    border-radius:16px;
+    padding:18px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    border-left:6px solid var(--primary);
+    cursor:pointer;
+}
+
+.job-title{
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.job-meta{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:4px;
+}
+
+.progress-wrap{
+    margin-top:12px;
+}
+
+.progress-bar{
+    width:100%;
+    height:10px;
+    border-radius:999px;
+    background:#E2E8F0;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    background:var(--primary);
+}
+
+/* ======================
+STATUS
+====================== */
+
+.badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    color:white;
+}
+
+.badge.selesai{
+    background:var(--success);
+}
+
+.badge.ongoing{
+    background:var(--primary);
+}
+
+.badge.hold{
+    background:var(--danger);
+}
+
+.badge.plan{
+    background:var(--warning);
+}
+
+/* ======================
+DOKUMENTASI
+====================== */
+
+.gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:20px;
+}
+
+.gallery-item{
+    background:white;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.gallery-item img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.gallery-caption{
+    padding:12px;
+}
+
+/* ======================
+MOBILE
+====================== */
+
+@media(max-width:768px){
+
+.header-wrap{
+    flex-direction:column;
+    text-align:center;
+}
+
+.logo{
+    width:80px;
+    height:80px;
+}
+
+.title-group h1{
+    font-size:20px;
+}
+
+.grid-2,
+.grid-3{
+    grid-template-columns:1fr;
+}
+
+.tabs{
+    justify-content:center;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="header-wrap">
+
+<img src="logo.png" class="logo">
+
+<div class="title-group">
+<h1>Dashboard Monitoring Sarpras Madrasah Al-Fatih</h1>
+<p id="lastUpdate">Memuat data...</p>
+</div>
+
+</div>
+
+<div class="tabs">
+
+<button class="tab-btn active" onclick="switchTab('ringkasan',this)">
+Ringkasan
+</button>
+
+<button class="tab-btn" onclick="switchTab('operasional',this)">
+Operasional
+</button>
+
+<button class="tab-btn" onclick="switchTab('finansial',this)">
+Finansial
+</button>
+
+<button class="tab-btn" onclick="switchTab('dokumen',this)">
+Dokumen
+</button>
+
+<button class="tab-btn" onclick="switchTab('galeri',this)">
+Galeri
+</button>
+
+</div>
+
+</header>
+
+<div class="container">
+
+<!-- RINGKASAN -->
+
+<section id="ringkasan" class="page active">
+
+<div class="kpi-grid">
+
+<div class="kpi-card">
+<div class="kpi-title">Total Anggaran</div>
+<div class="kpi-value" id="kpiAnggaran">Rp0</div>
+</div>
+
+<div class="kpi-card">
+<div class="kpi-title">Total Realisasi</div>
+<div class="kpi-value" id="kpiRealisasi">Rp0</div>
+</div>
+
+<div class="kpi-card">
+<div class="kpi-title">Sisa Anggaran</div>
+<div class="kpi-value" id="kpiSisa">Rp0</div>
+</div>
+
+<div class="kpi-card">
+<div class="kpi-title">Penyerapan</div>
+<div class="kpi-value" id="kpiPersen">0%</div>
+</div>
+
+</div>
+
+<div class="grid-2">
+
+<div class="card">
+<h3>Status Pekerjaan</h3>
+<br>
+<canvas id="statusChart"></canvas>
+</div>
+
+<div class="card">
+<h3>Perhatian Khusus</h3>
+<br>
+<div id="isuContainer"></div>
+</div>
+
+</div>
+
+</section>
+<!-- OPERASIONAL -->
+
+<section id="operasional" class="page">
+
+<div style="margin-bottom:20px;">
+
+<input
+id="searchPekerjaan"
+type="text"
+placeholder="Cari pekerjaan..."
+style="
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #ddd;
+font-size:14px;
+">
+
+</div>
+
+<div
+id="operasionalContainer"
+style="
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:20px;
+">
+</div>
+
+</section>
+
+<!-- FINANSIAL -->
+
+<section id="finansial" class="page">
+
+<div class="grid-2">
+
+<div class="card">
+
+<h3>Anggaran vs Realisasi</h3>
+
+<br>
+
+<canvas id="financeChart"></canvas>
+
+</div>
+
+<div class="card">
+
+<h3>Ringkasan Finansial</h3>
+
+<br>
+
+<div id="financeSummary">
+
+Memuat...
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h3>Detail Finansial</h3>
+
+<br>
+
+<div style="overflow:auto;">
+
+<table
+style="
+width:100%;
+border-collapse:collapse;
+"
+id="financeTable">
+
+<thead>
+
+<tr>
+
+<th style="padding:10px;text-align:left;">
+ID
+</th>
+
+<th style="padding:10px;text-align:left;">
+Pekerjaan
+</th>
+
+<th style="padding:10px;text-align:right;">
+Anggaran
+</th>
+
+<th style="padding:10px;text-align:right;">
+Realisasi
+</th>
+
+<th style="padding:10px;text-align:right;">
+Sisa
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="financeTableBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- DOKUMEN -->
+
+<section id="dokumen" class="page">
+
+<div
+id="dokumenContainer"
+style="
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+gap:20px;
+">
+</div>
+
+</section>
+
+<!-- GALERI -->
+
+<section id="galeri" class="page">
+
+<div
+id="galeriContainer"
+class="gallery-grid">
+
+</div>
+
+</section>
+
+</div>
+
+<!-- MODAL -->
+
+<div
+id="detailModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.6);
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
+
+<div
+style="
+background:white;
+width:90%;
+max-width:700px;
+max-height:90vh;
+overflow:auto;
+padding:25px;
+border-radius:20px;
+">
+
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+">
+
+<h2 id="modalNama"></h2>
+
+<button
+onclick="closeModal()"
+style="
+border:none;
+background:none;
+font-size:28px;
+cursor:pointer;
+">
+×
+</button>
+
+</div>
+
+<div id="modalContent">
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbxdbl-HUmPa6M1OD5lOm23aw-fGkk59-M1HHZL4QDRphy48Yjt_h2a8EY6vJ7qn10W43w/exec';
+
+let DATA = [];
+let RAW = {};
+
+let statusChart = null;
+let financeChart = null;
+
+/* ====================
+TAB
+==================== */
+
+function switchTab(id,btn){
+
+document
+.querySelectorAll('.page')
+.forEach(p=>p.classList.remove('active'));
+
+document
+.getElementById(id)
+.classList.add('active');
+
+document
+.querySelectorAll('.tab-btn')
+.forEach(b=>b.classList.remove('active'));
+
+btn.classList.add('active');
+
+}
+
+/* ====================
+MODAL
+==================== */
+
+function closeModal(){
+
+document
+.getElementById('detailModal')
+.style.display='none';
+
+}
+
+/* ====================
+HELPER
+==================== */
+
+function rupiah(n){
+
+n=Number(n)||0;
+
+return 'Rp '+
+n.toLocaleString('id-ID');
+
+}
+
+function angka(v){
+
+if(!v) return 0;
+
+return parseFloat(
+String(v)
+.replace(/[^0-9.-]/g,'')
+)||0;
+
+}
+
+function statusClass(status){
+
+if(status==='Selesai')
+return 'selesai';
+
+if(status==='On Going')
+return 'ongoing';
+
+if(status==='On Hold')
+return 'hold';
+
+return 'plan';
+
+}
+
+</script>
+/* ====================
+LOAD DATA
+==================== */
+
+async function loadData(){
+
+try{
+
+const res = await fetch(API_URL);
+
+RAW = await res.json();
+
+const master = RAW.master || [];
+
+DATA = master.map(item=>{
+
+return{
+id:item.id || '',
+program:item.program || '',
+nama:item.nama_pekerjaan || '',
+jenis:item.jenis_pekerjaan || '',
+status:item.status || 'Perencanaan',
+progress:angka(item.progress_percent),
+target:item.target_selesai || '',
+vendor:item.vendor || '',
+anggaran:angka(item.total_anggaran),
+realisasi:angka(item.realisasi_terkini),
+sisa:angka(item.sisa_anggaran),
+isu:item.isu_utama || '',
+rab:item.link_rab_detail || '',
+dokumentasi:item.link_dokumentasi || '',
+bukti:item.link_bukti_transaksi || ''
 };
 
-let normalizedData = [];
-let currentFilter = 'Semua';
-let statusChartInstance = null;
-let financeChartInstance = null;
-
-window.switchTab = switchTab;
-window.closeModal = closeModal;
-window.openModal = openModal;
-
-document.addEventListener('DOMContentLoaded', () => {
-    injectStyles();
-    enhanceHeader();
-    setupLayout();
-    bindTabs();
-    loadData();
 });
 
-function injectStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        :root{
-            --primary:#D4AF37;
-            --dark:#222222;
-            --bg:#f7f5f0;
-            --card:#ffffff;
-            --text:#222222;
-            --muted:#64748b;
-            --danger:#b91c1c;
-            --success:#15803d;
-            --warning:#b45309;
-            --border:#e2e8f0;
-            --soft:#f8fafc;
-        }
+renderDashboard();
 
-        body{
-            background:var(--bg) !important;
-            color:var(--text) !important;
-        }
+document.getElementById(
+'lastUpdate'
+).innerText =
+'Update terakhir : '+
+new Date().toLocaleString('id-ID');
 
-        header{
-            background:#fff !important;
-            border-bottom:4px solid var(--primary);
-            box-shadow:0 1px 8px rgba(0,0,0,.06);
-        }
+}catch(err){
 
-        .brand-shell{
-            max-width:1200px;
-            margin:0 auto 14px auto;
-            display:flex;
-            align-items:center;
-            gap:16px;
-        }
+console.error(err);
 
-        .brand-logo{
-            width:64px;
-            height:64px;
-            object-fit:contain;
-            flex:0 0 auto;
-        }
+alert(
+'Gagal mengambil data dari Apps Script'
+);
 
-        .brand-text h1{
-            margin:0;
-            color:var(--dark);
-            font-size:1.45rem;
-            line-height:1.2;
-            text-align:left;
-        }
-
-        .brand-text p{
-            margin:6px 0 0 0;
-            color:var(--muted);
-            font-size:.95rem;
-            line-height:1.35;
-        }
-
-        .tabs{
-            max-width:1200px;
-            margin:0 auto;
-            justify-content:flex-start !important;
-            padding-bottom:0 !important;
-        }
-
-        .tab-btn{
-            background:#fff7d6 !important;
-            color:var(--dark) !important;
-            border:1px solid #eadc99 !important;
-        }
-
-        .tab-btn.active{
-            background:var(--primary) !important;
-            color:#fff !important;
-            border-color:var(--primary) !important;
-        }
-
-        .container{
-            padding-top:22px;
-        }
-
-        .grid-kpi{
-            grid-template-columns:repeat(auto-fit,minmax(180px,1fr)) !important;
-        }
-
-        .scorecard{
-            border-bottom:4px solid var(--primary) !important;
-            box-shadow:0 2px 8px rgba(0,0,0,.06) !important;
-        }
-
-        .scorecard.kpi-primary{
-            border-bottom-color:var(--primary) !important;
-        }
-        .scorecard.kpi-success{
-            border-bottom-color:var(--success) !important;
-        }
-        .scorecard.kpi-warning{
-            border-bottom-color:var(--warning) !important;
-        }
-        .scorecard.kpi-danger{
-            border-bottom-color:var(--danger) !important;
-        }
-        .scorecard.kpi-dark{
-            border-bottom-color:#334155 !important;
-        }
-
-        .kpi-sub{
-            margin-top:6px;
-            font-size:.78rem;
-            color:var(--muted);
-        }
-
-        .section-title{
-            margin:0 0 12px 0;
-            color:var(--dark);
-            font-size:1rem;
-            font-weight:700;
-        }
-
-        .page{
-            animation:fadeIn .2s ease;
-        }
-
-        .page-shell{
-            display:grid;
-            gap:16px;
-        }
-
-        .panel{
-            background:var(--card);
-            border:1px solid var(--border);
-            border-radius:14px;
-            box-shadow:0 2px 10px rgba(0,0,0,.05);
-            padding:16px;
-        }
-
-        .toolbar{
-            display:flex;
-            flex-wrap:wrap;
-            gap:10px;
-            margin-bottom:14px;
-        }
-
-        .filter-chip{
-            border:1px solid #eadc99;
-            background:#fff;
-            color:var(--dark);
-            padding:9px 14px;
-            border-radius:999px;
-            cursor:pointer;
-            font-weight:700;
-            font-size:.85rem;
-            transition:.15s ease;
-        }
-
-        .filter-chip.active{
-            background:var(--primary);
-            border-color:var(--primary);
-            color:#fff;
-        }
-
-        .job-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-            gap:14px;
-        }
-
-        .job-card{
-            background:#fff;
-            border:1px solid var(--border);
-            border-radius:16px;
-            padding:15px;
-            box-shadow:0 3px 10px rgba(0,0,0,.05);
-            cursor:pointer;
-            transition:transform .15s ease, box-shadow .15s ease;
-            display:flex;
-            flex-direction:column;
-            gap:10px;
-        }
-
-        .job-card:hover{
-            transform:translateY(-2px);
-            box-shadow:0 8px 18px rgba(0,0,0,.08);
-        }
-
-        .job-top{
-            display:flex;
-            justify-content:space-between;
-            gap:8px;
-            align-items:flex-start;
-        }
-
-        .job-card h4{
-            margin:0;
-            color:var(--dark);
-            font-size:1rem;
-            line-height:1.35;
-        }
-
-        .job-meta{
-            color:var(--muted);
-            font-size:.85rem;
-            line-height:1.4;
-        }
-
-        .badge{
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            padding:5px 10px;
-            border-radius:999px;
-            font-size:.72rem;
-            font-weight:800;
-            color:#fff;
-            letter-spacing:.02em;
-        }
-
-        .badge.status-on-going{ background:#0369a1; }
-        .badge.status-selesai{ background:var(--success); }
-        .badge.status-on-hold{ background:var(--danger); }
-        .badge.status-perencanaan{ background:#6b7280; }
-        .badge.status-aktif{ background:#0f766e; }
-
-        .badge.kind-proyek{ background:#0f766e; }
-        .badge.kind-pengadaan{ background:#7c3aed; }
-        .badge.kind-program{ background:#ca8a04; }
-        .badge.kind-operasional{ background:#334155; }
-
-        .progress-wrap{
-            display:grid;
-            gap:6px;
-        }
-
-        progress{
-            width:100%;
-            height:10px;
-            border-radius:999px;
-            overflow:hidden;
-        }
-
-        progress::-webkit-progress-bar{
-            background:#e5e7eb;
-            border-radius:999px;
-        }
-
-        progress::-webkit-progress-value{
-            background:var(--primary);
-            border-radius:999px;
-        }
-
-        .progress-label{
-            font-size:.78rem;
-            color:var(--muted);
-            text-align:right;
-        }
-
-        .mini-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-            gap:12px;
-        }
-
-        .mini-card{
-            background:#fff;
-            border:1px solid var(--border);
-            border-radius:14px;
-            padding:14px;
-        }
-
-        .mini-card h4{
-            margin:0 0 8px 0;
-            font-size:.82rem;
-            color:var(--muted);
-            text-transform:uppercase;
-            letter-spacing:.03em;
-        }
-
-        .mini-card .value{
-            font-size:1.2rem;
-            font-weight:800;
-            color:var(--dark);
-        }
-
-        .alert-list{
-            display:grid;
-            gap:12px;
-        }
-
-        .alert-box{
-            background:#fff;
-            border:1px solid #fecaca;
-            border-left:5px solid var(--danger);
-            border-radius:12px;
-            padding:12px;
-        }
-
-        .alert-head{
-            display:flex;
-            justify-content:space-between;
-            gap:10px;
-            align-items:flex-start;
-            margin-bottom:6px;
-        }
-
-        .alert-type{
-            font-size:.72rem;
-            font-weight:800;
-            text-transform:uppercase;
-            letter-spacing:.03em;
-            color:var(--danger);
-            background:#fff1f2;
-            padding:4px 8px;
-            border-radius:999px;
-        }
-
-        .alert-title{
-            font-weight:800;
-            color:var(--dark);
-            line-height:1.35;
-        }
-
-        .alert-text{
-            color:#334155;
-            font-size:.9rem;
-            line-height:1.45;
-            white-space:pre-line;
-        }
-
-        .empty-state{
-            padding:18px;
-            text-align:center;
-            color:var(--muted);
-            border:1px dashed #d1d5db;
-            border-radius:14px;
-            background:#fff;
-        }
-
-        .doc-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-            gap:14px;
-        }
-
-        .doc-card{
-            background:#fff;
-            border:1px solid var(--border);
-            border-radius:16px;
-            padding:14px;
-            box-shadow:0 3px 10px rgba(0,0,0,.05);
-            display:grid;
-            gap:10px;
-        }
-
-        .doc-card h4{
-            margin:0;
-            color:var(--dark);
-            font-size:1rem;
-            line-height:1.35;
-        }
-
-        .doc-actions{
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:8px;
-        }
-
-        .btn-doc{
-            display:inline-flex;
-            justify-content:center;
-            align-items:center;
-            text-align:center;
-            padding:9px 10px;
-            border-radius:10px;
-            text-decoration:none;
-            color:#fff;
-            font-weight:800;
-            font-size:.8rem;
-            line-height:1.2;
-            min-height:42px;
-        }
-
-        .bg-blue{ background:#2563eb; }
-        .bg-green{ background:#059669; }
-        .bg-yellow{ background:#d97706; }
-
-        .chart-box{
-            background:#fff;
-            border:1px solid var(--border);
-            border-radius:16px;
-            padding:16px;
-            box-shadow:0 2px 10px rgba(0,0,0,.05);
-        }
-
-        .chart-wrap{
-            max-width:100%;
-            overflow:auto;
-        }
-
-        .finance-summary{
-            margin-bottom:14px;
-        }
-
-        .finance-table{
-            width:100%;
-            border-collapse:collapse;
-            font-size:.9rem;
-            background:#fff;
-            border-radius:14px;
-            overflow:hidden;
-        }
-
-        .finance-table th,
-        .finance-table td{
-            border-bottom:1px solid #e5e7eb;
-            padding:10px 8px;
-            text-align:left;
-            vertical-align:top;
-        }
-
-        .finance-table th{
-            background:#fff7d6;
-            color:var(--dark);
-            font-size:.82rem;
-            text-transform:uppercase;
-            letter-spacing:.03em;
-        }
-
-        .finance-table tr:hover td{
-            background:#fafaf9;
-        }
-
-        .status-pill{
-            display:inline-flex;
-            align-items:center;
-            padding:5px 10px;
-            border-radius:999px;
-            font-size:.75rem;
-            font-weight:800;
-            background:#e5e7eb;
-            color:#111827;
-        }
-
-        .status-normal{ background:#dcfce7; color:#166534; }
-        .status-warning{ background:#ffedd5; color:#9a3412; }
-        .status-danger{ background:#fee2e2; color:#991b1b; }
-
-        .modal-content{
-            background:#fff;
-            border:1px solid var(--border);
-            border-radius:18px;
-            box-shadow:0 20px 50px rgba(0,0,0,.22);
-        }
-
-        .modal-content h2{
-            color:var(--dark) !important;
-        }
-
-        .modal-core-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-            gap:8px 14px;
-            margin-top:10px;
-        }
-
-        .modal-row{
-            border-bottom:1px solid #f1f5f9;
-            padding:9px 0;
-        }
-
-        .modal-row strong{
-            color:var(--dark);
-        }
-
-        .modal-section{
-            margin-top:14px;
-            padding:14px;
-            background:#fafafa;
-            border-radius:14px;
-            border:1px solid var(--border);
-        }
-
-        .modal-section h4{
-            margin:0 0 10px 0;
-            color:var(--dark);
-            font-size:.95rem;
-        }
-
-        .modal-extra-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-            gap:12px;
-            margin-top:12px;
-        }
-
-        .extra-card{
-            background:#fff;
-            border:1px solid var(--border);
-            border-radius:14px;
-            padding:12px;
-        }
-
-        .extra-list{
-            display:grid;
-            gap:8px;
-        }
-
-        .extra-item{
-            border:1px solid #e5e7eb;
-            border-radius:12px;
-            padding:10px;
-            background:#fff;
-        }
-
-        .extra-item strong{
-            display:block;
-            margin-bottom:4px;
-            color:var(--dark);
-        }
-
-        .thumb-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
-            gap:8px;
-        }
-
-        .thumb{
-            display:block;
-            border-radius:12px;
-            overflow:hidden;
-            border:1px solid #e5e7eb;
-            background:#f8fafc;
-            text-decoration:none;
-        }
-
-        .thumb img{
-            width:100%;
-            height:110px;
-            object-fit:cover;
-            display:block;
-            background:#f3f4f6;
-        }
-
-        .thumb .cap{
-            padding:7px 8px;
-            font-size:.75rem;
-            color:#334155;
-            line-height:1.3;
-        }
-
-        .gallery-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-            gap:14px;
-        }
-
-        .gallery-card{
-            background:#fff;
-            border:1px solid var(--border);
-            border-radius:16px;
-            padding:14px;
-            box-shadow:0 2px 10px rgba(0,0,0,.05);
-        }
-
-        .gallery-card h4{
-            margin:0 0 6px 0;
-            color:var(--dark);
-        }
-
-        .gallery-card .sub{
-            color:var(--muted);
-            font-size:.82rem;
-            margin-bottom:12px;
-        }
-
-        .gallery-block{
-            margin-bottom:12px;
-        }
-
-        .gallery-block h5{
-            margin:0 0 8px 0;
-            color:#334155;
-            font-size:.85rem;
-        }
-
-        .gallery-images{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
-            gap:8px;
-        }
-
-        .gallery-images a{
-            display:block;
-            border-radius:12px;
-            overflow:hidden;
-            border:1px solid #e5e7eb;
-            background:#f8fafc;
-        }
-
-        .gallery-images img{
-            width:100%;
-            height:95px;
-            object-fit:cover;
-            display:block;
-        }
-
-        .gallery-empty{
-            padding:16px;
-            text-align:center;
-            color:var(--muted);
-            border:1px dashed #d1d5db;
-            border-radius:14px;
-            background:#fff;
-        }
-
-        .subtle{
-            color:var(--muted);
-            font-size:.85rem;
-        }
-
-        .pill-row{
-            display:flex;
-            flex-wrap:wrap;
-            gap:8px;
-        }
-
-        .small-pill{
-            display:inline-flex;
-            align-items:center;
-            padding:4px 8px;
-            border-radius:999px;
-            font-size:.72rem;
-            font-weight:800;
-            background:#eef2ff;
-            color:#3730a3;
-        }
-
-        @media (max-width: 860px){
-            .brand-shell{
-                flex-direction:column;
-                text-align:center;
-            }
-            .brand-text h1{
-                text-align:center;
-                font-size:1.28rem;
-            }
-            .brand-text p{
-                text-align:center;
-            }
-            .tabs{
-                justify-content:center !important;
-            }
-            .doc-actions{
-                grid-template-columns:1fr;
-            }
-            .modal-extra-grid{
-                grid-template-columns:1fr;
-            }
-        }
-
-        @media (max-width: 640px){
-            .container{
-                padding:14px;
-            }
-            .grid-kpi{
-                grid-template-columns:1fr 1fr !important;
-            }
-            .job-grid,
-            .doc-grid,
-            .gallery-grid{
-                grid-template-columns:1fr;
-            }
-            .finance-table{
-                font-size:.82rem;
-            }
-        }
-    `;
-    document.head.appendChild(style);
 }
 
-function enhanceHeader() {
-    const header = document.querySelector('header');
-    if (!header) return;
-
-    const existingTitle = header.querySelector('h1');
-    const tabs = header.querySelector('.tabs');
-    if (!tabs) return;
-
-    if (header.querySelector('.brand-shell')) return;
-
-    const brandShell = document.createElement('div');
-    brandShell.className = 'brand-shell';
-
-    const titleText = existingTitle ? existingTitle.textContent.trim() : 'Dashboard Maintenance Sarpras Madrasah Al-Fatih';
-    brandShell.innerHTML = `
-        <img class="brand-logo" src="${LOGO_SRC}" alt="Logo Madrasah Al-Fatih" onerror="this.style.display='none'">
-        <div class="brand-text">
-            <h1>${escapeHtml(titleText)}</h1>
-            <p>Sistem Pelaporan Otomatis Progress Kerja & Manajemen Realisasi Anggaran Lapangan</p>
-        </div>
-    `;
-
-    header.insertBefore(brandShell, tabs);
-    if (existingTitle) existingTitle.remove();
 }
 
-function setupLayout() {
-    const container = document.querySelector('.container');
-    if (!container) return;
+/* ====================
+DASHBOARD
+==================== */
 
-    const page2 = document.getElementById('page2');
-    if (page2 && !document.getElementById('status-filter-bar')) {
-        const bar = document.createElement('div');
-        bar.id = 'status-filter-bar';
-        bar.className = 'toolbar';
-        bar.innerHTML = `
-            <button class="filter-chip active" data-filter="Semua">Semua</button>
-            <button class="filter-chip" data-filter="Perencanaan">Perencanaan</button>
-            <button class="filter-chip" data-filter="On Going">On Going</button>
-            <button class="filter-chip" data-filter="On Hold">On Hold</button>
-            <button class="filter-chip" data-filter="Selesai">Selesai</button>
-        `;
-        page2.insertBefore(bar, document.getElementById('operasional-container'));
-    }
+function renderDashboard(){
 
-    const page3 = document.getElementById('page3');
-    if (page3 && !document.getElementById('finance-summary')) {
-        const summary = document.createElement('div');
-        summary.id = 'finance-summary';
-        summary.className = 'finance-summary';
-        page3.insertBefore(summary, page3.firstChild);
-    }
+renderKPI();
 
-    if (page3 && !document.getElementById('finance-table-wrap')) {
-        const wrap = document.createElement('div');
-        wrap.id = 'finance-table-wrap';
-        wrap.className = 'chart-box';
-        wrap.style.marginTop = '14px';
-        page3.appendChild(wrap);
-    }
+renderOperasional();
 
-    if (page3 && !document.getElementById('finance-chart-wrap')) {
-        const chartBox = page3.querySelector('.chart-box');
-        if (chartBox) chartBox.id = 'finance-chart-wrap';
-    }
+renderFinance();
 
-    const page4 = document.getElementById('page4');
-    if (page4 && page4.querySelector('#dokumen-container')) {
-        page4.classList.add('page-shell');
-    }
+renderDokumen();
 
-    if (!document.getElementById('page5')) {
-        const page5 = document.createElement('div');
-        page5.id = 'page5';
-        page5.className = 'page';
-        page5.innerHTML = `
-            <div class="panel">
-                <h3 class="section-title">Galeri Dokumentasi Foto</h3>
-                <div id="gallery-container" class="gallery-grid"></div>
-            </div>
-        `;
-        const modal = document.getElementById('detailModal');
-        if (modal && modal.parentElement) {
-            modal.parentElement.insertBefore(page5, modal);
-        } else {
-            container.appendChild(page5);
-        }
-    }
+renderAlerts();
 
-    const tabs = document.querySelector('.tabs');
-    if (tabs && !tabs.querySelector('[data-tab="page5"]')) {
-        const btn = document.createElement('button');
-        btn.className = 'tab-btn';
-        btn.dataset.tab = 'page5';
-        btn.textContent = 'Galeri';
-        btn.onclick = function () { switchTab('page5', this); };
-        tabs.appendChild(btn);
-    }
+renderCharts();
 
-    const modalContent = document.querySelector('#detailModal .modal-content');
-    if (modalContent && !document.getElementById('modal-extra')) {
-        const extra = document.createElement('div');
-        extra.id = 'modal-extra';
-        extra.className = 'modal-section';
-        extra.innerHTML = '<h4>Memuat...</h4>';
-        modalContent.appendChild(extra);
-    }
 }
 
-function bindTabs() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        if (!btn.onclick) {
-            btn.onclick = function () {
-                const tabId = btn.dataset.tab || '';
-                if (tabId) switchTab(tabId, btn);
-            };
-        }
-    });
+/* ====================
+KPI
+==================== */
+
+function renderKPI(){
+
+let totalAnggaran=0;
+let totalRealisasi=0;
+
+DATA.forEach(d=>{
+
+totalAnggaran += d.anggaran;
+totalRealisasi += d.realisasi;
+
+});
+
+let totalSisa =
+totalAnggaran-totalRealisasi;
+
+let persen =
+totalAnggaran>0
+?
+(totalRealisasi/totalAnggaran)*100
+:
+0;
+
+document.getElementById(
+'kpiAnggaran'
+).innerText =
+rupiah(totalAnggaran);
+
+document.getElementById(
+'kpiRealisasi'
+).innerText =
+rupiah(totalRealisasi);
+
+document.getElementById(
+'kpiSisa'
+).innerText =
+rupiah(totalSisa);
+
+document.getElementById(
+'kpiPersen'
+).innerText =
+persen.toFixed(1)+'%';
+
 }
 
-function switchTab(tabId, btn) {
-    document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-    const target = document.getElementById(tabId);
-    if (target) target.classList.add('active');
+/* ====================
+ALERT
+==================== */
 
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    if (btn) {
-        btn.classList.add('active');
-    } else {
-        const autoBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
-        if (autoBtn) autoBtn.classList.add('active');
-    }
+function renderAlerts(){
+
+const box =
+document.getElementById(
+'isuContainer'
+);
+
+let html='';
+
+DATA.forEach(d=>{
+
+if(
+d.status==='On Hold'
+||
+d.isu
+){
+
+html += `
+<div
+style="
+padding:12px;
+border-left:4px solid #DC2626;
+background:#FEF2F2;
+margin-bottom:10px;
+border-radius:8px;
+">
+
+<strong>
+${d.id}
+</strong>
+
+<br>
+
+${d.nama}
+
+<br><br>
+
+${d.isu || 'Perlu perhatian'}
+
+</div>
+`;
+
 }
 
-function closeModal() {
-    const modal = document.getElementById('detailModal');
-    if (modal) modal.style.display = 'none';
+});
+
+if(html===''){
+
+html=
+`
+Tidak ada isu kritis
+`;
+
 }
 
-function loadData() {
-    const url = `${API_URL}?v=${Date.now()}`;
-    fetch(url, { cache: 'no-store' })
-        .then(res => res.json())
-        .then(data => {
-            state.master = Array.isArray(data.master) ? data.master : [];
-            state.timeline = Array.isArray(data.timeline) ? data.timeline : [];
-            state.realisasi = Array.isArray(data.realisasi) ? data.realisasi : [];
-            state.pengajuan = Array.isArray(data.pengajuan) ? data.pengajuan : [];
-            state.dokumentasi = Array.isArray(data.dokumentasi) ? data.dokumentasi : [];
+box.innerHTML=html;
 
-            normalizedData = normalizeData();
-
-            renderDashboard();
-        })
-        .catch(err => {
-            console.error(err);
-            const target = document.getElementById('kpi-anggaran');
-            if (target) target.innerText = 'Gagal memuat data';
-        });
 }
 
-function normalizeData() {
-    const timelineMap = groupById(state.timeline);
-    const realisasiMap = groupById(state.realisasi);
-    const pengajuanMap = groupById(state.pengajuan);
-    const fotoMap = groupById(state.dokumentasi);
+/* ====================
+OPERASIONAL
+==================== */
 
-    return (state.master || [])
-        .filter(item => item && String(item.id || '').trim())
-        .filter(item => String(item.program || '').trim().toUpperCase() !== 'TOTAL KESELURUHAN ANGGARAN')
-        .filter(item => /^P-\d+/.test(String(item.id).trim()))
-        .map(item => {
-            const id = String(item.id).trim();
-            const timelineRows = timelineMap[id] || [];
-            const realisasiRows = realisasiMap[id] || [];
-            const pengajuanRows = pengajuanMap[id] || [];
-            const fotoRows = fotoMap[id] || [];
+function renderOperasional(){
 
-            const latestTimeline = timelineRows.length ? timelineRows[timelineRows.length - 1] : {};
-            const totalAnggaran = cleanNum(item.total_anggaran);
-            const realisasiFromMaster = cleanNum(item.realisasi_terkini);
-            const realisasiFromRows = sumByField(realisasiRows, 'nominal_realisasi');
-            const realisasiTerkini = realisasiFromMaster > 0 ? realisasiFromMaster : realisasiFromRows;
-            const sisaAnggaran = cleanNum(item.sisa_anggaran) > 0 ? cleanNum(item.sisa_anggaran) : Math.max(totalAnggaran - realisasiTerkini, 0);
+const box =
+document.getElementById(
+'operasionalContainer'
+);
 
-            const progress = clamp(
-                cleanNum(item.progress_percent || latestTimeline.progress_percent || 0),
-                0,
-                100
-            );
+let html='';
 
-            const issue = firstNonEmpty([
-                item.isu_utama,
-                latestTimeline.isu_kendala,
-                latestTimeline.isu_utama,
-                summarizeIssues(timelineRows)
-            ]);
+DATA.forEach((d,index)=>{
 
-            const target = firstNonEmpty([
-                item.target_selesai,
-                latestTimeline.end_date,
-                latestTimeline.target_selesai
-            ]);
+html+=`
 
-            return {
-                ...item,
-                total_anggaran: totalAnggaran,
-                realisasi_terkini: realisasiTerkini,
-                sisa_anggaran: sisaAnggaran,
-                progress_percent: progress,
-                isu_utama: issue,
-                target_selesai: target,
-                _timeline: timelineRows,
-                _realisasi: realisasiRows,
-                _pengajuan: pengajuanRows,
-                _foto: fotoRows
-            };
-        });
+<div
+class="job-card"
+onclick="openModal(${index})"
+>
+
+<div
+class="badge ${statusClass(d.status)}"
+>
+
+${d.status}
+
+</div>
+
+<br><br>
+
+<div class="job-title">
+
+${d.nama}
+
+</div>
+
+<div class="job-meta">
+
+${d.id}
+
+</div>
+
+<div class="job-meta">
+
+${d.vendor}
+
+</div>
+
+<div class="job-meta">
+
+Target :
+${d.target}
+
+</div>
+
+<div class="progress-wrap">
+
+<div class="progress-bar">
+
+<div
+class="progress-fill"
+style="
+width:${d.progress}%;
+">
+</div>
+
+</div>
+
+</div>
+
+<div
+style="
+margin-top:8px;
+font-size:12px;
+">
+
+${d.progress}%
+
+</div>
+
+</div>
+
+`;
+
+});
+
+box.innerHTML=html;
+
 }
 
-function renderDashboard() {
-    renderKpis();
-    renderAlerts();
-    renderOperasional();
-    renderFinance();
-    renderDocs();
-    renderGallery();
-    renderCharts();
+/* ====================
+MODAL
+==================== */
+
+function openModal(index){
+
+const d=DATA[index];
+
+document.getElementById(
+'modalNama'
+).innerText =
+d.nama;
+
+document.getElementById(
+'modalContent'
+).innerHTML =
+
+`
+
+<p>
+<b>ID</b><br>
+${d.id}
+</p>
+
+<br>
+
+<p>
+<b>Program</b><br>
+${d.program}
+</p>
+
+<br>
+
+<p>
+<b>Jenis</b><br>
+${d.jenis}
+</p>
+
+<br>
+
+<p>
+<b>Status</b><br>
+${d.status}
+</p>
+
+<br>
+
+<p>
+<b>Vendor</b><br>
+${d.vendor}
+</p>
+
+<br>
+
+<p>
+<b>Target</b><br>
+${d.target}
+</p>
+
+<br>
+
+<p>
+<b>Anggaran</b><br>
+${rupiah(d.anggaran)}
+</p>
+
+<br>
+
+<p>
+<b>Realisasi</b><br>
+${rupiah(d.realisasi)}
+</p>
+
+<br>
+
+<p>
+<b>Sisa</b><br>
+${rupiah(d.sisa)}
+</p>
+
+<br>
+
+<p>
+<b>Isu Utama</b><br>
+${d.isu || '-'}
+</p>
+
+<br>
+
+<a
+href="${d.rab}"
+target="_blank"
+>
+📄 RAB
+</a>
+
+<br><br>
+
+<a
+href="${d.dokumentasi}"
+target="_blank"
+>
+📷 Dokumentasi
+</a>
+
+<br><br>
+
+<a
+href="${d.bukti}"
+target="_blank"
+>
+🧾 Bukti
+</a>
+
+`;
+
+document.getElementById(
+'detailModal'
+).style.display='flex';
+
 }
-
-function renderKpis() {
-    const page1 = document.getElementById('page1');
-    const grid = page1 ? page1.querySelector('.grid-kpi') : null;
-    if (!grid) return;
-
-    const totalPekerjaan = normalizedData.length;
-    const totalAnggaran = normalizedData.reduce((acc, item) => acc + cleanNum(item.total_anggaran), 0);
-    const totalRealisasi = normalizedData.reduce((acc, item) => acc + cleanNum(item.realisasi_terkini), 0);
-    const totalSisa = normalizedData.reduce((acc, item) => acc + cleanNum(item.sisa_anggaran), 0);
-    const penyerapan = totalAnggaran > 0 ? (totalRealisasi / totalAnggaran) * 100 : 0;
-    const pekerjaanAktif = normalizedData.filter(item => !['Selesai'].includes(normalizeStatus(item.status))).length;
-
-    grid.innerHTML = `
-        <div class="scorecard kpi-primary">
-            <h3>Total Pekerjaan</h3>
-            <p>${totalPekerjaan}</p>
-            <div class="kpi-sub">Seluruh pekerjaan terdaftar</div>
-        </div>
-        <div class="scorecard kpi-primary">
-            <h3>Total Anggaran</h3>
-            <p>${formatRp(totalAnggaran)}</p>
-            <div class="kpi-sub">Nilai RAB keseluruhan</div>
-        </div>
-        <div class="scorecard kpi-success">
-            <h3>Realisasi Terkini</h3>
-            <p>${formatRp(totalRealisasi)}</p>
-            <div class="kpi-sub">Realisasi per pekerjaan</div>
-        </div>
-        <div class="scorecard kpi-warning">
-            <h3>Sisa Anggaran</h3>
-            <p>${formatRp(totalSisa)}</p>
-            <div class="kpi-sub">Anggaran tersisa</div>
-        </div>
-        <div class="scorecard kpi-danger">
-            <h3>Penyerapan</h3>
-            <p>${penyerapan.toFixed(2)}%</p>
-            <div class="kpi-sub">Realisasi / Anggaran</div>
-        </div>
-        <div class="scorecard kpi-dark">
-            <h3>Pekerjaan Aktif</h3>
-            <p>${pekerjaanAktif}</p>
-            <div class="kpi-sub">Belum selesai</div>
-        </div>
-    `;
-}
-
-function renderAlerts() {
-    const container = document.getElementById('alert-container');
-    if (!container) return;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const alerts = [];
-
-    normalizedData.forEach(item => {
-        const status = normalizeStatus(item.status);
-        const anggaran = cleanNum(item.total_anggaran);
-        const realisasi = cleanNum(item.realisasi_terkini);
-        const target = parseFlexibleDate(item.target_selesai);
-
-        if (status === 'On Hold') {
-            alerts.push({
-                type: 'On Hold',
-                title: `[${item.id}] ${item.nama_pekerjaan}`,
-                text: item.isu_utama || 'Pekerjaan tertahan.'
-            });
-        }
-
-        if (anggaran > 0 && realisasi > anggaran) {
-            alerts.push({
-                type: 'Over Budget',
-                title: `[${item.id}] ${item.nama_pekerjaan}`,
-                text: `Realisasi ${formatRp(realisasi)} melebihi anggaran ${formatRp(anggaran)}.`
-            });
-        }
-
-        if (target && status !== 'Selesai' && target < today) {
-            alerts.push({
-                type: 'Target Lewat',
-                title: `[${item.id}] ${item.nama_pekerjaan}`,
-                text: `Target selesai ${formatDateId(target)} sudah terlewati.`
-            });
-        }
-
-        const issueText = String(item.isu_utama || '').toLowerCase();
-        if (issueText && /kendala|masalah|menunggu|terhambat|garansi|approval/.test(issueText)) {
-            alerts.push({
-                type: 'Isu Utama',
-                title: `[${item.id}] ${item.nama_pekerjaan}`,
-                text: item.isu_utama
-            });
-        }
-    });
-
-    const unique = dedupeAlerts(alerts).slice(0, 8);
-
-    if (!unique.length) {
-        container.innerHTML = `<div class="empty-state">Tidak ada isu kritis saat ini.</div>`;
-        return;
-    }
-
-    container.innerHTML = `<div class="alert-list">${unique.map(a => `
-        <div class="alert-box">
-            <div class="alert-head">
-                <div class="alert-title">${escapeHtml(a.title)}</div>
-                <div class="alert-type">${escapeHtml(a.type)}</div>
-            </div>
-            <div class="alert-text">${escapeHtml(a.text)}</div>
-        </div>
-    `).join('')}</div>`;
-}
-
-function renderOperasional() {
-    const container = document.getElementById('operasional-container');
-    const bar = document.getElementById('status-filter-bar');
-    if (!container) return;
-
-    if (bar) {
-        bar.querySelectorAll('.filter-chip').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.filter === currentFilter);
-            btn.onclick = function () {
-                currentFilter = btn.dataset.filter;
-                renderOperasional();
-            };
-        });
-    }
-
-    const filtered = normalizedData.filter(item => {
-        const status = normalizeStatus(item.status);
-        return currentFilter === 'Semua' ? true : status === currentFilter;
-    });
-
-    if (!filtered.length) {
-        container.innerHTML = `<div class="empty-state">Tidak ada pekerjaan pada filter ini.</div>`;
-        return;
-    }
-
-    container.innerHTML = filtered.map((item, index) => {
-        const status = normalizeStatus(item.status);
-        const kind = normalizeKind(item.jenis_pekerjaan);
-        const progress = clamp(cleanNum(item.progress_percent), 0, 100);
-        const vendor = item.vendor ? String(item.vendor).replace(/\n/g, ' • ') : 'Internal PBB';
-        const target = item.target_selesai ? formatTarget(item.target_selesai) : 'Belum Ditentukan';
-        const photoCount = Array.isArray(item._foto) ? item._foto.length : 0;
-        const issue = item.isu_utama || 'Tidak ada catatan khusus.';
-
-        return `
-            <div class="job-card" onclick="openModal(${normalizedData.indexOf(item)})">
-                <div class="job-top">
-                    <span class="badge status-${statusClass(status)}">${escapeHtml(status)}</span>
-                    <span class="badge kind-${kindClass(kind)}">${escapeHtml(kind)}</span>
-                </div>
-                <h4>${escapeHtml(item.nama_pekerjaan || '-')}</h4>
-                <div class="job-meta">${escapeHtml(item.program || '')}</div>
-                <div class="progress-wrap">
-                    <progress value="${progress}" max="100"></progress>
-                    <div class="progress-label">${progress.toFixed(1)}%</div>
-                </div>
-                <div class="job-meta">
-                    <strong>Vendor:</strong> ${escapeHtml(vendor)}<br>
-                    <strong>Target:</strong> ${escapeHtml(target)}<br>
-                    <strong>Foto:</strong> ${photoCount} item
-                </div>
-                <div class="job-meta" style="color:#0f172a;">
-                    ${escapeHtml(shorten(issue, 110))}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function renderFinance() {
-    const summary = document.getElementById('finance-summary');
-    const tableWrap = document.getElementById('finance-table-wrap');
-
-    const items = [...normalizedData].sort((a, b) => cleanNum(b.total_anggaran) - cleanNum(a.total_anggaran));
-    const overBudget = items.filter(i => cleanNum(i.total_anggaran) > 0 && cleanNum(i.realisasi_terkini) > cleanNum(i.total_anggaran)).length;
-    const selesai = items.filter(i => normalizeStatus(i.status) === 'Selesai').length;
-    const onGoing = items.filter(i => normalizeStatus(i.status) === 'On Going').length;
-    const pengadaan = items.filter(i => normalizeKind(i.jenis_pekerjaan) === 'Pengadaan').length;
-
-    if (summary) {
-        summary.innerHTML = `
-            <div class="mini-grid">
-                <div class="mini-card">
-                    <h4>Over Budget</h4>
-                    <div class="value">${overBudget}</div>
-                </div>
-                <div class="mini-card">
-                    <h4>Selesai</h4>
-                    <div class="value">${selesai}</div>
-                </div>
-                <div class="mini-card">
-                    <h4>On Going</h4>
-                    <div class="value">${onGoing}</div>
-                </div>
-                <div class="mini-card">
-                    <h4>Pengadaan</h4>
-                    <div class="value">${pengadaan}</div>
-                </div>
-            </div>
-        `;
-    }
-
-    if (tableWrap) {
-        const rows = items.map(item => {
-            const anggaran = cleanNum(item.total_anggaran);
-            const realisasi = cleanNum(item.realisasi_terkini);
-            const sisa = cleanNum(item.sisa_anggaran);
-            let keuangan = 'Normal';
-            let cls = 'status-normal';
-            if (anggaran <= 0) {
-                keuangan = 'Belum Ada RAB';
-                cls = 'status-warning';
-            } else if (realisasi > anggaran) {
-                keuangan = 'Overbudget';
-                cls = 'status-danger';
-            } else if (anggaran > 0 && realisasi / anggaran >= 0.9) {
-                keuangan = 'Mendekati Batas';
-                cls = 'status-warning';
-            }
-
-            return `
-                <tr>
-                    <td>${escapeHtml(item.id || '')}</td>
-                    <td>${escapeHtml(item.nama_pekerjaan || '')}</td>
-                    <td>${formatRp(anggaran)}</td>
-                    <td>${formatRp(realisasi)}</td>
-                    <td>${formatRp(sisa)}</td>
-                    <td><span class="status-pill ${cls}">${escapeHtml(keuangan)}</span></td>
-                </tr>
-            `;
-        }).join('');
-
-        tableWrap.innerHTML = `
-            <h3 class="section-title">Tabel Finansial Per Pekerjaan</h3>
-            <div class="chart-wrap">
-                <table class="finance-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Pekerjaan</th>
-                            <th>Anggaran</th>
-                            <th>Realisasi</th>
-                            <th>Sisa</th>
-                            <th>Status Keuangan</th>
-                        </tr>
-                    </thead>
-                    <tbody>${rows}</tbody>
-                </table>
-            </div>
-        `;
-    }
-}
-
-function renderDocs() {
-    const container = document.getElementById('dokumen-container');
-    if (!container) return;
-
-    const items = normalizedData.filter(item => item.link_rab_detail || item.link_dokumentasi || item.link_bukti_transaksi);
-    if (!items.length) {
-        container.innerHTML = `<div class="empty-state">Belum ada dokumen yang bisa ditampilkan.</div>`;
-        return;
-    }
-
-    container.innerHTML = items.map(item => {
-        const docs = [
-            item.link_rab_detail ? { href: item.link_rab_detail, text: '📄 RAB', cls: 'bg-blue' } : null,
-            item.link_dokumentasi ? { href: item.link_dokumentasi, text: '📷 Dokumentasi', cls: 'bg-green' } : null,
-            item.link_bukti_transaksi ? { href: item.link_bukti_transaksi, text: '🧾 Bukti Transaksi', cls: 'bg-yellow' } : null
-        ].filter(Boolean);
-
-        return `
-            <div class="doc-card">
-                <h4>${escapeHtml(item.nama_pekerjaan || '-')}</h4>
-                <div class="subtle">${escapeHtml(item.program || '')} • ${escapeHtml(item.id || '')}</div>
-                <div class="doc-actions">
-                    ${docs.map(d => `
-                        <a class="btn-doc ${d.cls}" href="${escapeAttr(d.href)}" target="_blank" rel="noopener">${d.text}</a>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function renderGallery() {
-    const container = document.getElementById('gallery-container');
-    if (!container) return;
-
-    const rows = Array.isArray(state.dokumentasi) ? state.dokumentasi.filter(r => String(r.id || '').trim()) : [];
-    if (!rows.length) {
-        container.innerHTML = `<div class="gallery-empty">Belum ada dokumentasi foto. Tambahkan link foto di Sheet 5.</div>`;
-        return;
-    }
-
-    const grouped = groupById(rows);
-    const items = Object.keys(grouped).sort().map(id => {
-        const photos = grouped[id];
-        const meta = normalizedData.find(x => String(x.id).trim() === id) || {};
-        const projectName = firstNonEmpty([meta.nama_pekerjaan, photos[0].nama_pekerjaan, id]);
-        const program = firstNonEmpty([meta.program, photos[0].program, '']);
-        const categories = groupByCategory(photos);
-
-        const blocks = Object.keys(categories).map(cat => {
-            const list = categories[cat];
-            const thumbs = list.map(photo => {
-                const imageUrl = toDriveImageUrl(photo.link_foto || photo.link || '');
-                const caption = firstNonEmpty([photo.caption, '']);
-                const date = photo.tanggal_upload ? formatDateAny(photo.tanggal_upload) : '';
-                const label = [caption, date].filter(Boolean).join(' • ');
-
-                return `
-                    <a href="${escapeAttr(photo.link_foto || photo.link || '#')}" target="_blank" rel="noopener" title="${escapeAttr(caption)}">
-                        <img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(caption || projectName)}" onerror="this.style.display='none'">
-                        ${label ? `<div class="cap">${escapeHtml(label)}</div>` : ''}
-                    </a>
-                `;
-            }).join('');
-
-            return `
-                <div class="gallery-block">
-                    <h5>${escapeHtml(cat)}</h5>
-                    <div class="gallery-images">${thumbs}</div>
-                </div>
-            `;
-        }).join('');
-
-        return `
-            <div class="gallery-card">
-                <h4>${escapeHtml(projectName)}</h4>
-                <div class="sub">${escapeHtml(program)} • ${escapeHtml(id)}</div>
-                ${blocks}
-            </div>
-        `;
-    }).join('');
-
-    container.innerHTML = items;
-}
-
-function renderCharts() {
-    if (statusChartInstance) statusChartInstance.destroy();
-    if (financeChartInstance) financeChartInstance.destroy();
-
-    const statusCounts = {
-        'Selesai': 0,
-        'On Going': 0,
-        'On Hold': 0,
-        'Perencanaan': 0
-    };
-
-    normalizedData.forEach(item => {
-        const s = normalizeStatus(item.status);
-        if (statusCounts[s] !== undefined) statusCounts[s] += 1;
-        else statusCounts['Perencanaan'] += 1;
-    });
-
-    const ctxStatus = document.getElementById('statusChart');
-    if (ctxStatus) {
-        statusChartInstance = new Chart(ctxStatus, {
-            type: 'doughnut',
-            data: {
-                labels: ['Selesai', 'On Going', 'On Hold', 'Perencanaan'],
-                datasets: [{
-                    data: [statusCounts['Selesai'], statusCounts['On Going'], statusCounts['On Hold'], statusCounts['Perencanaan']],
-                    backgroundColor: ['#15803d', '#0369a1', '#b91c1c', '#6b7280'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-    }
-
-    const ctxFinance = document.getElementById('financeChart');
-    if (ctxFinance) {
-        const labels = normalizedData.map(item => truncateLabel(item.nama_pekerjaan || '', 26));
-        const anggaran = normalizedData.map(item => cleanNum(item.total_anggaran));
-        const realisasi = normalizedData.map(item => cleanNum(item.realisasi_terkini));
-
-        financeChartInstance = new Chart(ctxFinance, {
-            type: 'bar',
-            data: {
-                labels,
-                datasets: [
-                    {
-                        label: 'Anggaran',
-                        data: anggaran,
-                        backgroundColor: '#cbd5e1'
-                    },
-                    {
-                        label: 'Realisasi',
-                        data: realisasi,
-                        backgroundColor: '#D4AF37'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                plugins: {
-                    legend: { position: 'bottom' }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: value => formatRp(Number(value))
-                        }
-                    },
-                    y: {
-                        ticks: {
-                            autoSkip: false
-                        }
-                    }
-                }
-            }
-        });
-    }
-}
-
-function openModal(index) {
-    const item = normalizedData[index];
-    if (!item) return;
-
-    const modal = document.getElementById('detailModal');
-    const modalExtra = document.getElementById('modal-extra');
-
-    document.getElementById('m-nama').innerText = item.nama_pekerjaan || '-';
-
-    const badge = document.getElementById('m-status');
-    const status = normalizeStatus(item.status);
-    badge.innerText = status;
-    badge.className = `badge status-${statusClass(status)}`;
-
-    document.getElementById('m-kategori').innerText = `${item.jenis_pekerjaan || '-'} • ${item.program || '-'}`;
-    document.getElementById('m-anggaran').innerText = formatRp(cleanNum(item.total_anggaran));
-    document.getElementById('m-realisasi').innerText = formatRp(cleanNum(item.realisasi_terkini));
-
-    const sisa = cleanNum(item.sisa_anggaran);
-    document.getElementById('m-sisa').innerText = formatRp(sisa);
-    document.getElementById('m-sisa').style.color = sisa < 0 ? 'var(--danger)' : 'var(--dark)';
-
-    document.getElementById('m-keterangan').innerText = item.isu_utama || 'Tidak ada catatan khusus.';
-
-    if (modalExtra) {
-        modalExtra.innerHTML = buildModalExtra(item);
-    }
-
-    modal.style.display = 'flex';
-}
-
-function buildModalExtra(item) {
-    const docs = [
-        item.link_rab_detail ? { href: item.link_rab_detail, text: '📄 Lihat RAB', cls: 'bg-blue' } : null,
-        item.link_dokumentasi ? { href: item.link_dokumentasi, text: '📷 Dokumentasi', cls: 'bg-green' } : null,
-        item.link_bukti_transaksi ? { href: item.link_bukti_transaksi, text: '🧾 Bukti Transaksi', cls: 'bg-yellow' } : null
-    ].filter(Boolean);
-
-    const timelineRows = Array.isArray(item._timeline) ? [...item._timeline].slice(-5).reverse() : [];
-    const pengajuanRows = Array.isArray(item._pengajuan) ? [...item._pengajuan].slice(-5).reverse() : [];
-    const realisasiRows = Array.isArray(item._realisasi) ? [...item._realisasi].slice(-5).reverse() : [];
-    const fotoRows = Array.isArray(item._foto) ? item._foto : [];
-
-    const timelineHtml = timelineRows.length ? timelineRows.map(row => `
-        <div class="extra-item">
-            <strong>${escapeHtml(firstNonEmpty([row.status_lapangan, row.status, row.progress_percent ? `${row.progress_percent}%` : 'Timeline']))}</strong>
-            <div class="subtle">${escapeHtml(firstNonEmpty([row.tanggal, row.start_date, row.end_date, '']))}</div>
-            <div>${escapeHtml(firstNonEmpty([row.isu_kendala, row.isu_utama, '']))}</div>
-        </div>
-    `).join('') : `<div class="subtle">Belum ada histori timeline.</div>`;
-
-    const pengajuanHtml = pengajuanRows.length ? pengajuanRows.map(row => `
-        <div class="extra-item">
-            <strong>${formatRp(cleanNum(row.nilai_pengajuan))}</strong>
-            <div class="subtle">${escapeHtml(firstNonEmpty([row.tanggal_pengajuan, '']))}</div>
-            <div>${escapeHtml(firstNonEmpty([row.status_pencairan, '']))}</div>
-            <div>${escapeHtml(firstNonEmpty([row.keterangan, '']))}</div>
-        </div>
-    `).join('') : `<div class="subtle">Belum ada histori pengajuan.</div>`;
-
-    const realisasiHtml = realisasiRows.length ? realisasiRows.map(row => `
-        <div class="extra-item">
-            <strong>${formatRp(cleanNum(row.nominal_realisasi))}</strong>
-            <div class="subtle">${escapeHtml(firstNonEmpty([row.tanggal_realisasi, '']))}</div>
-            <div>${escapeHtml(firstNonEmpty([row.deskripsi_biaya, row.status_dana, '']))}</div>
-        </div>
-    `).join('') : `<div class="subtle">Belum ada histori realisasi.</div>`;
-
-    const photoGroups = groupByCategory(fotoRows);
-    const photoHtml = Object.keys(photoGroups).length ? Object.keys(photoGroups).map(cat => {
-        const list = photoGroups[cat].slice(0, 6);
-        const thumbs = list.map(photo => {
-            const img = toDriveImageUrl(photo.link_foto || photo.link || '');
-            return `
-                <a class="thumb" href="${escapeAttr(photo.link_foto || photo.link || '#')}" target="_blank" rel="noopener">
-                    <img src="${escapeAttr(img)}" alt="${escapeAttr(photo.caption || cat)}" onerror="this.style.display='none'">
-                    <div class="cap">${escapeHtml(firstNonEmpty([photo.caption, photo.tanggal_upload, '']))}</div>
-                </a>
-            `;
-        }).join('');
-
-        return `
-            <div class="extra-item">
-                <strong>${escapeHtml(cat)}</strong>
-                <div class="thumb-grid">${thumbs}</div>
-            </div>
-        `;
-    }).join('') : `<div class="subtle">Belum ada foto.</div>`;
-
-    return `
-        <div class="modal-extra-grid">
-            <div class="extra-card">
-                <h4>Dokumen Cepat</h4>
-                <div class="doc-actions" style="grid-template-columns:1fr; margin-top:8px;">
-                    ${docs.map(d => `<a class="btn-doc ${d.cls}" href="${escapeAttr(d.href)}" target="_blank" rel="noopener">${d.text}</a>`).join('')}
-                    ${!docs.length ? `<div class="subtle">Belum ada dokumen.</div>` : ''}
-                </div>
-            </div>
-
-            <div class="extra-card">
-                <h4>Histori Lapangan</h4>
-                <div class="extra-list">${timelineHtml}</div>
-            </div>
-
-            <div class="extra-card">
-                <h4>Pengajuan Dana</h4>
-                <div class="extra-list">${pengajuanHtml}</div>
-            </div>
-
-            <div class="extra-card">
-                <h4>Realisasi Dana</h4>
-                <div class="extra-list">${realisasiHtml}</div>
-            </div>
-
-            <div class="extra-card" style="grid-column:1 / -1;">
-                <h4>Galeri Foto</h4>
-                <div class="extra-list">${photoHtml}</div>
-            </div>
-        </div>
-    `;
-}
-
-function groupById(rows) {
-    const out = {};
-    (rows || []).forEach(row => {
-        const id = String(row.id || '').trim();
-        if (!id) return;
-        if (!out[id]) out[id] = [];
-        out[id].push(row);
-    });
-    return out;
-}
-
-function groupByCategory(rows) {
-    const out = {};
-    (rows || []).forEach(row => {
-        const cat = firstNonEmpty([row.kategori_foto, row.kategori, 'Dokumentasi']);
-        if (!out[cat]) out[cat] = [];
-        out[cat].push(row);
-    });
-    return out;
-}
-
-function sumByField(rows, field) {
-    return (rows || []).reduce((acc, row) => acc + cleanNum(row[field]), 0);
-}
-
-function normalizeStatus(status) {
-    const s = String(status || 'Perencanaan').trim();
-    if (/on\s*going/i.test(s)) return 'On Going';
-    if (/on\s*hold/i.test(s)) return 'On Hold';
-    if (/selesai/i.test(s)) return 'Selesai';
-    if (/perencanaan/i.test(s)) return 'Perencanaan';
-    if (/aktif/i.test(s)) return 'On Going';
-    return s || 'Perencanaan';
-}
-
-function normalizeKind(kind) {
-    const k = String(kind || '').trim();
-    if (/proyek/i.test(k)) return 'Proyek';
-    if (/pengadaan/i.test(k)) return 'Pengadaan';
-    if (/program/i.test(k)) return 'Program';
-    if (/operasional/i.test(k)) return 'Operasional';
-    return k || 'Proyek';
-}
-
-function statusClass(status) {
-    const s = normalizeStatus(status);
-    if (s === 'On Going') return 'on-going';
-    if (s === 'On Hold') return 'on-hold';
-    if (s === 'Selesai') return 'selesai';
-    if (s === 'Perencanaan') return 'perencanaan';
-    return 'aktif';
-}
-
-function kindClass(kind) {
-    const k = normalizeKind(kind);
-    if (k === 'Proyek') return 'proyek';
-    if (k === 'Pengadaan') return 'pengadaan';
-    if (k === 'Program') return 'program';
-    if (k === 'Operasional') return 'operasional';
-    return 'proyek';
-}
-
-function firstNonEmpty(list) {
-    for (const v of list || []) {
-        if (v !== undefined && v !== null && String(v).trim() !== '') return v;
-    }
-    return '';
-}
-
-function summarizeIssues(rows) {
-    const texts = [];
-    (rows || []).forEach(r => {
-        const txt = firstNonEmpty([r.isu_kendala, r.isu_utama, r.keterangan]);
-        if (txt) texts.push(String(txt).trim());
-    });
-    return [...new Set(texts)].join(' | ');
-}
-
-function dedupeAlerts(alerts) {
-    const seen = new Set();
-    const out = [];
-    alerts.forEach(a => {
-        const key = `${a.type}|${a.title}|${a.text}`;
-        if (seen.has(key)) return;
-        seen.add(key);
-        out.push(a);
-    });
-    return out;
-}
-
-function truncateLabel(text, len) {
-    const s = String(text || '');
-    if (s.length <= len) return s;
-    return s.slice(0, len - 1) + '…';
-}
-
-function shorten(text, maxLen) {
-    const s = String(text || '');
-    if (s.length <= maxLen) return s;
-    return s.slice(0, maxLen - 1) + '…';
-}
-
-function formatRp(angka) {
-    const n = Number(angka || 0);
-    return 'Rp ' + n.toLocaleString('id-ID');
-}
-
-function cleanNum(val) {
-    if (val === null || val === undefined || val === '') return 0;
-    const str = String(val).replace(/\s+/g, '').replace(/,/g, '.').replace(/[^0-9.-]/g, '');
-    const parsed = parseFloat(str);
-    return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function clamp(value, min, max) {
-    return Math.min(Math.max(Number(value || 0), min), max);
-}
-
-function formatTarget(value) {
-    if (!value) return 'Belum Ditentukan';
-    const d = parseFlexibleDate(value);
-    if (d) return formatDateId(d);
-    return String(value);
-}
-
-function formatDateAny(value) {
-    const d = parseFlexibleDate(value);
-    if (!d) return String(value || '');
-    return formatDateId(d);
-}
-
-function parseFlexibleDate(value) {
-    if (!value) return null;
-    if (value instanceof Date && !isNaN(value)) return value;
-
-    const s = String(value).trim();
-    if (!s) return null;
-
-    const iso = new Date(s);
-    if (!isNaN(iso)) return iso;
-
-    const m1 = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-    if (m1) {
-        const d = parseInt(m1[1], 10);
-        const m = parseInt(m1[2], 10) - 1;
-        let y = parseInt(m1[3], 10);
-        if (y < 100) y += 2000;
-        const dt = new Date(y, m, d);
-        if (!isNaN(dt)) return dt;
-    }
-
-    return null;
-}
-
-function formatDateId(date) {
-    if (!(date instanceof Date) || isNaN(date)) return '';
-    return new Intl.DateTimeFormat('id-ID', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    }).format(date);
-}
-
-function escapeHtml(value) {
-    return String(value === undefined || value === null ? '' : value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
-function escapeAttr(value) {
-    return escapeHtml(value).replace(/`/g, '&#96;');
-}
-
-function toDriveImageUrl(url) {
-    const safe = String(url || '').trim();
-    if (!safe) return '';
-    if (safe.includes('drive.google.com')) {
-        const idMatch =
-            safe.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) ||
-            safe.match(/[?&]id=([a-zA-Z0-9_-]+)/) ||
-            safe.match(/\/d\/([a-zA-Z0-9_-]+)/);
-        if (idMatch && idMatch[1]) {
-            return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
-        }
-    }
-    return safe;
-}
-</script>
