@@ -526,6 +526,9 @@
         }
         .doc-badge-item:active { background: var(--bg); }
 
+        /* ===== RESPONSIVE NOTICE ===== */
+        .responsive-notice { display: none; }
+
         /* ===== TABLET (768px) ===== */
         @media (min-width: 768px) {
             :root {
@@ -673,76 +676,15 @@
             .link-btn:hover { background: var(--white); }
             .tab-btn:hover { background: var(--white); }
         }
-    </style>
-</head>
-<body>
 
-<div class="container">
-        .card-value { font-size: 24px; font-weight: 700; color: var(--dark); }
-        
-        .scope-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 30px; }
-        .scope-item { background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; padding: 15px; }
-        .scope-item h4 { color: var(--muted); font-size: 12px; margin-bottom: 4px; font-weight: 500; }
-        .scope-item p { font-size: 22px; font-weight: 700; color: var(--dark); }
-
-        /* TABLE & CARDS */
-        .table-container { width: 100%; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; background: var(--white); }
-        th { background: #f8fafc; color: var(--dark); padding: 14px 12px; font-weight: 600; border-bottom: 2px solid var(--border); white-space: nowrap; }
-        td { padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; color: #334155; }
-        tr:hover { background-color: #f8fafc; }
-        
-        .mobile-cards-container { display: flex; flex-direction: column; gap: 16px; }
-        .mobile-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.01); }
-        .mobile-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px dashed var(--border); padding-bottom: 10px; }
-        .mobile-card-title { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 4px; line-height: 1.3; }
-        .mobile-card-program { font-size: 11px; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .mobile-card-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
-        .mobile-card-label { color: var(--muted); font-weight: 500; }
-        .mobile-card-value { font-weight: 600; color: var(--dark); }
-        .mobile-card-actions { display: flex; gap: 8px; margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; justify-content: space-between; align-items: center; }
-        .mobile-drive-links { display: flex; gap: 6px; }
-
-        /* Badges & Buttons */
-        .badge { padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; text-align: center; display: inline-block; white-space: nowrap; }
-        .bg-ongoing { background-color: #e0f2fe; color: #0369a1; }
-        .bg-selesai { background-color: #dcfce7; color: #15803d; }
-        .bg-onhold { background-color: var(--red-light); color: var(--red-dark); }
-        .bg-perencanaan { background-color: #f1f5f9; color: #475569; }
-
-        .link-btn { display: inline-block; padding: 6px 12px; font-size: 11px; font-weight: 600; text-decoration: none; border-radius: 6px; border: 1px solid var(--gold); color: var(--gold); background: var(--white); transition: 0.2s; }
-        .link-btn:hover { background: var(--gold); color: white; }
-        .link-disabled { display: inline-block; padding: 6px 12px; font-size: 11px; color: #94a3b8; border: 1px solid var(--border); background: #f8fafc; border-radius: 6px; pointer-events: none; opacity: 0.4; }
-        .btn-readmore { background: transparent; border: none; color: #0369a1; font-weight: 600; font-size: 12px; cursor: pointer; margin-top: 4px; text-decoration: underline; }
-
-        .notes-box { background: var(--white); border-radius: 20px; border: 1px solid var(--border); padding: 24px; }
-        .notes-box ul { padding-left: 20px; }
-        .notes-box li { margin-bottom: 12px; line-height: 1.6; color: #334155; font-size: 14px; }
-
-        .responsive-notice { display: none; background: #fff8e1; border: 1px solid #ffe082; color: #b78103; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 15px; text-align: center; }
-
-        /* Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(34, 34, 34, 0.6); justify-content: center; align-items: center; z-index: 999; backdrop-filter: blur(4px); padding: 15px; }
-        .modal-content { background: var(--white); padding: 25px; border-radius: 16px; width: 100%; max-width: 580px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: #f8fafc; }
-        .btn-submit { background: var(--dark); color: var(--white); border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; font-size: 14px; }
-        .btn-close { background: #e2e8f0; color: var(--dark); border: none; padding: 6px 12px; float: right; cursor: pointer; border-radius: 6px; font-weight: 600; font-size: 12px; }
-
-        .detail-narasi-box { background: #f8fafc; border-left: 4px solid var(--gold); padding: 15px; border-radius: 6px; margin-top: 10px; line-height: 1.6; font-size: 14px; white-space: pre-line; }
-        .onhold-box-list { background: #fff5f5; border-left: 4px solid var(--red-dark); padding: 15px; border-radius: 6px; margin-top: 10px; }
-        .onhold-item-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 14px; color: #7f1d1d; }
-        .doc-list-container { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-        .doc-badge-item { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; font-size: 13px; text-decoration: none; color: var(--dark); }
-
+        /* ===== MOBILE ===== */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .container { padding: 14px; border-radius: 14px; }
             .header-section { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
             .tabs { display: flex; width: 100%; overflow-x: auto; }
             .tab-btn { flex: 1; text-align: center; padding: 10px 12px; font-size: 12px; }
-            .responsive-notice { display: block; }
+            .responsive-notice { display: block; background: #fff8e1; border: 1px solid #ffe082; color: #b78103; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 15px; }
             .cards { grid-template-columns: 1fr; gap: 10px; }
             .scope-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .filter-wrapper { flex-direction: column; align-items: stretch; }
@@ -939,7 +881,6 @@
     }
 
     function loadData() {
-        // PERBAIKAN: Memanggil google.script.run jika tertanam di Apps Script agar aman & cepat
         if (typeof google !== 'undefined' && google.script && google.script.run) {
             google.script.run.withSuccessHandler(function(data) {
                 localData = data;
@@ -948,7 +889,6 @@
                 switchTab('dashboard');
             }).getData();
         } else {
-            // Jalur fallback cadangan API Fetch URL Web App
             fetch(SCRIPT_URL)
                 .then(res => res.json())
                 .then(data => {
@@ -1000,324 +940,198 @@
         );
     }
 
-    function containsTotal(value) {
-        return getString(value).toUpperCase().includes("TOTAL");
+    function renderFilteredContent(data) {
+        const filtered = filterData(data);
+        renderTable(filtered);
+        renderMobileCards(filtered);
+    }
+
+    function filterData(data) {
+        if (!Array.isArray(data)) return [];
+        
+        const searchTerm = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+        
+        return data.filter(row => {
+            if (!isDataRow(row)) return false;
+            
+            const status = getField(row, 'status');
+            const nama = getField(row, 'nama', 'nama_pekerjaan');
+            const program = getField(row, 'program');
+            
+            const statusMatch = currentFilterStatus === 'Semua' || status === currentFilterStatus;
+            const searchMatch = !searchTerm || nama.toLowerCase().includes(searchTerm) || program.toLowerCase().includes(searchTerm);
+            
+            return statusMatch && searchMatch;
+        });
     }
 
     function filterDataState() {
-        let keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-        let filtered = localData.filter(row => {
-            if (!isDataRow(row)) return false;
-            let nama = getField(row, 'nama', 'nama_pekerjaan');
-            let program = getField(row, 'program', 'id');
-            if (containsTotal(program) || containsTotal(nama)) return false;
-
-            let matchKeyword = (nama + ' ' + program).toLowerCase().includes(keyword);
-            let status = getField(row, 'status', 'status_lapangan');
-            let matchStatus = (currentFilterStatus === "Semua") || (status === currentFilterStatus);
-            
-            return matchKeyword && matchStatus;
-        });
-        
-        renderFilteredContent(filtered, true);
+        renderFilteredContent(localData);
     }
 
-    function parseCurrency(text) {
-        if (!text) return 0;
-        let clean = text.toString().replace(/[^0-9.,-]/g, "");
-        if (clean.includes(",") && clean.includes(".")) {
-            clean = clean.indexOf(".") < clean.indexOf(",") ? clean.replace(/\./g, "").replace(",", ".") : clean.replace(/,/g, "");
-        } else if (clean.includes(",")) {
-            let parts = clean.split(",");
-            clean = (parts.length > 2 || parts[1].length !== 2) ? clean.replace(/,/g, "") : clean.replace(",", ".");
-        } else if (clean.includes(".")) {
-            let parts = clean.split(".");
-            if (parts.length > 2 || parts[1].length !== 2) clean = clean.replace(/\./g, "");
-        }
-        let value = parseFloat(clean);
-        return isNaN(value) ? 0 : value;
-    }
-
-    function renderFilteredContent(filteredData, isFiltering = false) {
+    function renderTable(data) {
         const tbody = document.getElementById('tableBody');
-        const mobileContainer = document.getElementById('mobileCards');
-        
-        tbody.innerHTML = "";
-        mobileContainer.innerHTML = "";
-
-        const rows = filteredData.filter(row => {
-            if (!isDataRow(row)) return false;
-            const nama = getField(row, 'nama', 'nama_pekerjaan');
-            const program = getField(row, 'program', 'id');
-            if (containsTotal(program) || containsTotal(nama)) return false;
-            return true;
-        });
-
-        if (rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding: 30px; color: var(--muted);">Tidak ada data pekerjaan yang cocok.</td></tr>`;
-            mobileContainer.innerHTML = `<p style="text-align: center; color: var(--muted); padding: 20px;">Tidak ada data pekerjaan yang cocok.</p>`;
+        if (!data || data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding: 30px; color: var(--muted);">Tidak ada data yang sesuai dengan filter.</td></tr>`;
             return;
         }
+        
+        tbody.innerHTML = data.map((row, idx) => {
+            const status = getField(row, 'status');
+            const badgeClass = {
+                'Selesai': 'bg-selesai',
+                'On Going': 'bg-ongoing',
+                'On Hold': 'bg-onhold',
+                'Perencanaan': 'bg-perencanaan'
+            }[status] || 'bg-perencanaan';
+            
+            return `
+                <tr>
+                    <td style="text-align: center;">${idx + 1}</td>
+                    <td>${getField(row, 'program')}</td>
+                    <td>${getField(row, 'nama', 'nama_pekerjaan')}</td>
+                    <td><span class="badge ${badgeClass}">${status}</span></td>
+                    <td>Rp ${formatNumber(getField(row, 'anggaran', 'total_anggaran'))}</td>
+                    <td>Rp ${formatNumber(getField(row, 'realisasi'))}</td>
+                    <td>Rp ${formatNumber(getField(row, 'sisa', 'sisa_anggaran'))}</td>
+                    <td style="text-align: center;">${getDriveLinks(row)}</td>
+                    <td><button class="btn-readmore" onclick="openDetail('${getField(row, 'nama', 'nama_pekerjaan').replace(/'/g, "\\'")}')">Lihat Detail</button></td>
+                    <td style="text-align: center;"><button class="link-btn" onclick="openEdit('${getField(row, 'nama', 'nama_pekerjaan').replace(/'/g, "\\'")}')">Edit</button></td>
+                </tr>
+            `;
+        }).join('');
+    }
 
-        let validIdx = 1;
-        rows.forEach(row => {
-            let status = getField(row, 'status', 'status_lapangan');
-            let statusClass = "bg-perencanaan";
-            if (status === "On Going") statusClass = "bg-ongoing";
-            if (status === "Selesai") statusClass = "bg-selesai";
-            if (status === "On Hold") statusClass = "bg-onhold";
-
-            let nama = getField(row, 'nama', 'nama_pekerjaan');
-            let program = getField(row, 'program', 'id');
-            let total = getField(row, 'total', 'total_anggaran');
-            let realisasi = getField(row, 'realisasi', 'realisasi_(sementara)', 'nominal_realisasi');
-            let sisa = getField(row, 'sisa', 'sisa_anggaran');
-            if (!sisa && total && realisasi) {
-                sisa = `Rp ${ (parseCurrency(total) - parseCurrency(realisasi)).toLocaleString('id-ID') }`;
-            }
-
-            let linkRab = getField(row, 'rab', 'link_rab_detail');
-            let linkDok = getField(row, 'dokumentasi', 'link_dokumentasi');
-            let linkBukti = getField(row, 'bukti', 'link_bukti_transaksi');
-
-            let ketRaw = getField(row, 'keterangan', 'isu_kendala', 'deskripsi_biaya');
-            if (!ketRaw) ketRaw = "-";
-            let ketTampil = ketRaw.length > 50 ? ketRaw.substring(0, 47) + "..." : ketRaw;
-            let amanKet = encodeURIComponent(ketRaw);
-            let namaAman = nama.replace(/'/g, "\\'");
-            let progAman = program.replace(/'/g, "\\'");
-
-            let detailBtnHtml = `<button class="btn-readmore" onclick="openDetail('${namaAman}', '${progAman}', '${status}', '${amanKet}')">🔍 Detail</button>`;
-
-            let btnRab = (linkRab && linkRab.startsWith("http")) ? `<a class="link-btn" href="${linkRab.trim()}" target="_blank">📂 RAB</a>` : `<span class="link-disabled">📂 RAB</span>`;
-            let btnDok = (linkDok && linkDok.startsWith("http")) ? `<a class="link-btn" href="${linkDok.trim()}" target="_blank">📸 Dok</a>` : `<span class="link-disabled">📸 Dok</span>`;
-            let btnBukti = (linkBukti && linkBukti.startsWith("http")) ? `<a class="link-btn" href="${linkBukti.trim()}" target="_blank">🧾 Bukti</a>` : `<span class="link-disabled">🧾 Bukti</span>`;
-
-            tbody.innerHTML += `<tr>
-                <td style="text-align: center; font-weight: 600; color: var(--muted);">${validIdx}</td>
-                <td><b>${program}</b></td>
-                <td>${nama}</td>
-                <td><span class="badge ${statusClass}">${status}</span></td>
-                <td>${total}</td>
-                <td style="color: #0369a1;">${realisasi || 'Rp0'}</td>
-                <td style="color: #15803d;">${sisa}</td>
-                <td><div style="display:flex; justify-content:center; gap:6px;">${btnRab} ${btnDok} ${btnBukti}</div></td>
-                <td><span style="font-size:12px;">${ketTampil}</span> ${ketRaw.length > 50 || status === "On Hold" ? detailBtnHtml : ''}</td>
-                <td style="text-align: center;"><button onclick="openEdit('${namaAman}', '${status}', '${realisasi}', '${amanKet}')" style="background:#f1f5f9; border:1px solid var(--border); padding:6px 10px; border-radius:6px; font-size:12px; cursor:pointer;">Edit</button></td>
-            </tr>`;
-
-            mobileContainer.innerHTML += `
+    function renderMobileCards(data) {
+        const container = document.getElementById('mobileCards');
+        if (!data || data.length === 0) {
+            container.innerHTML = `<p style="text-align: center; color: var(--muted); padding: 30px;">Tidak ada data yang sesuai dengan filter.</p>`;
+            return;
+        }
+        
+        container.innerHTML = data.map(row => {
+            const status = getField(row, 'status');
+            const badgeClass = {
+                'Selesai': 'bg-selesai',
+                'On Going': 'bg-ongoing',
+                'On Hold': 'bg-onhold',
+                'Perencanaan': 'bg-perencanaan'
+            }[status] || 'bg-perencanaan';
+            
+            return `
                 <div class="mobile-card">
                     <div class="mobile-card-header">
                         <div>
-                            <div class="mobile-card-program">${program}</div>
-                            <div class="mobile-card-title">${nama}</div>
+                            <div class="mobile-card-program">${getField(row, 'program')}</div>
+                            <div class="mobile-card-title">${getField(row, 'nama', 'nama_pekerjaan')}</div>
                         </div>
-                        <span class="badge ${statusClass}">${status}</span>
+                        <span class="badge ${badgeClass}">${status}</span>
                     </div>
                     <div class="mobile-card-row">
                         <span class="mobile-card-label">Total Anggaran:</span>
-                        <span class="mobile-card-value">${total}</span>
+                        <span class="mobile-card-value">Rp ${formatNumber(getField(row, 'anggaran', 'total_anggaran'))}</span>
                     </div>
                     <div class="mobile-card-row">
                         <span class="mobile-card-label">Realisasi:</span>
-                        <span class="mobile-card-value" style="color: #0369a1;">${realisasi || 'Rp0'}</span>
+                        <span class="mobile-card-value">Rp ${formatNumber(getField(row, 'realisasi'))}</span>
                     </div>
                     <div class="mobile-card-row">
-                        <span class="mobile-card-label">Sisa Selisih:</span>
-                        <span class="mobile-card-value" style="color: #15803d;">${sisa}</span>
+                        <span class="mobile-card-label">Sisa:</span>
+                        <span class="mobile-card-value">Rp ${formatNumber(getField(row, 'sisa', 'sisa_anggaran'))}</span>
                     </div>
                     <div class="mobile-card-actions">
-                        <div class="mobile-drive-links">${btnRab} ${btnDok} ${btnBukti}</div>
-                        <div style="display:flex; gap:6px;">
-                            <button onclick="openDetail('${namaAman}', '${progAman}', '${status}', '${amanKet}')" style="background:#0369a1; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">Info</button>
-                            <button onclick="openEdit('${namaAman}', '${status}', '${realisasi}', '${amanKet}')" style="background:#f1f5f9; border:1px solid var(--border); padding:6px 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer;">Edit</button>
-                        </div>
+                        <div class="mobile-drive-links">${getDriveLinks(row)}</div>
+                        <button class="link-btn" onclick="openEdit('${getField(row, 'nama', 'nama_pekerjaan').replace(/'/g, "\\'")}')">Edit</button>
+                        <button class="btn-readmore" onclick="openDetail('${getField(row, 'nama', 'nama_pekerjaan').replace(/'/g, "\\'")}')">Detail</button>
                     </div>
-                </div>`;
-            validIdx++;
-        });
+                </div>
+            `;
+        }).join('');
+    }
+
+    function formatNumber(value) {
+        const num = parseInt(value) || 0;
+        return num.toLocaleString('id-ID');
+    }
+
+    function getDriveLinks(row) {
+        const links = getField(row, 'drive_links', 'links');
+        if (!links) return '<span class="link-disabled">Tidak ada link</span>';
+        return links.split(',').map(link => {
+            link = link.trim();
+            if (!link) return '';
+            const name = new URL(link).pathname.split('/').pop() || 'Drive';
+            return `<a href="${link}" target="_blank" class="link-btn">📁 ${name.substring(0, 15)}...</a>`;
+        }).join('');
     }
 
     function calculateAnalysis(data) {
-        let totalAnggaran = 0; let totalRealisasi = 0;
-        let statusCount = { "Selesai": 0, "On Going": 0, "On Hold": 0, "Perencanaan": 0 };
-
-        data.forEach(row => {
-            if (!isDataRow(row)) return;
-            const nama = getField(row, 'nama', 'nama_pekerjaan');
-            const program = getField(row, 'program', 'id');
-            if (containsTotal(program) || containsTotal(nama)) return;
-
-            totalAnggaran += parseCurrency(getField(row, 'total', 'total_anggaran'));
-            totalRealisasi += parseCurrency(getField(row, 'realisasi', 'realisasi_(sementara)', 'nominal_realisasi'));
-            let status = getField(row, 'status', 'status_lapangan');
-            if (statusCount[status] !== undefined) statusCount[status]++;
-        });
-
-        document.getElementById('cardTotalAnggaran').innerHTML = `Rp ${totalAnggaran.toLocaleString('id-ID')}`;
-        document.getElementById('cardTotalRealisasi').innerHTML = `Rp ${totalRealisasi.toLocaleString('id-ID')}`;
-        document.getElementById('cardSisaAnggaran').innerHTML = `Rp ${(totalAnggaran - totalRealisasi).toLocaleString('id-ID')}`;
-
-        let totalProject = statusCount["Selesai"] + statusCount["On Going"] + statusCount["On Hold"] + statusCount["Perencanaan"];
-        document.getElementById('scopeTotal').innerHTML = totalProject;
-        document.getElementById('scopeSelesai').innerHTML = statusCount["Selesai"];
-        document.getElementById('scopeOngoing').innerHTML = statusCount["On Going"];
-        document.getElementById('scopeOnhold').innerHTML = statusCount["On Hold"];
-        document.getElementById('scopePerencanaan').innerHTML = statusCount["Perencanaan"];
-
-        let persenSelesai = totalProject > 0 ? ((statusCount["Selesai"] / totalProject) * 100).toFixed(1) : 0;
-        document.getElementById('analisaList').innerHTML = `
-            <li>Progres fisik kumulatif sarpras saat ini menyentuh angka <b>${persenSelesai}%</b> (di mana ${statusCount["Selesai"]} dari total ${totalProject} kegiatan telah selesai 100%).</li>
-            <li>Saat ini terdapat <b>${statusCount["On Going"]} program</b> sedang berjalan, <b>${statusCount["On Hold"]} ditunda</b>, dan <b>${statusCount["Perencanaan"]} program</b> dalam fase perencanaan awal.</li>
+        const analisaList = document.getElementById('analisaList');
+        if (!Array.isArray(data) || data.length === 0) {
+            analisaList.innerHTML = '<li>Data tidak tersedia untuk analisis.</li>';
+            return;
+        }
+        
+        const validData = data.filter(isDataRow);
+        const total = validData.length;
+        const selesai = validData.filter(r => getField(r, 'status') === 'Selesai').length;
+        const ongoing = validData.filter(r => getField(r, 'status') === 'On Going').length;
+        const onhold = validData.filter(r => getField(r, 'status') === 'On Hold').length;
+        const planning = validData.filter(r => getField(r, 'status') === 'Perencanaan').length;
+        
+        analisaList.innerHTML = `
+            <li><strong>Total Pekerjaan:</strong> ${total} item</li>
+            <li><strong>Selesai (100%):</strong> ${selesai} item (${total > 0 ? ((selesai/total)*100).toFixed(1) : 0}%)</li>
+            <li><strong>On Going:</strong> ${ongoing} item (${total > 0 ? ((ongoing/total)*100).toFixed(1) : 0}%)</li>
+            <li><strong>On Hold:</strong> ${onhold} item (${total > 0 ? ((onhold/total)*100).toFixed(1) : 0}%)</li>
+            <li><strong>Tahap Perencanaan:</strong> ${planning} item (${total > 0 ? ((planning/total)*100).toFixed(1) : 0}%)</li>
         `;
     }
 
-    function extractFilesAndCleanText(rawText) {
-        let cleanText = rawText; let filesFound = [];
-        const urlRegex = /(https?:\/\/[^\s]+)/g; let matches = rawText.match(urlRegex);
-        if (matches) {
-            matches.forEach(url => {
-                let lowerUrl = url.toLowerCase(); let docType = "🔗 Tautan Link"; let icon = "🌐";
-                if (lowerUrl.includes(".pdf")) { docType = "Dokumen PDF"; icon = "📕"; }
-                else if (lowerUrl.includes(".doc") || lowerUrl.includes("docs.google")) { docType = "File Word"; icon = "📘"; }
-                else if (lowerUrl.includes(".xl") || lowerUrl.includes("sheets.google")) { docType = "Spreadsheet Excel"; icon = "📗"; }
-                let lineContext = rawText.split('\n').find(line => line.includes(url)) || "";
-                let fileLabel = lineContext.replace(url, "").replace(/[-:*]/g, "").trim() || "Berkas Lampiran";
-                filesFound.push({ label: fileLabel, type: docType, icon: icon, link: url });
-                cleanText = cleanText.replace(lineContext, "");
-            });
-        }
-        return { text: cleanText.trim().replace(/\n\s*\n/g, '\n'), files: filesFound };
-    }
-
-    function formatOnHoldText(rawText) {
-        let lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-        let htmlResult = `<div class="onhold-box-list">`;
-        lines.forEach(line => {
-            let cleanLine = line.replace(/^[-•*]|\d+\.\s*/g, "").trim();
-            htmlResult += `<div class="onhold-item-row"><span>⚠️</span><div><b>${cleanLine}</b></div></div>`;
-        });
-        return htmlResult + `</div>`;
-    }
-
-    function openDetail(nama, program, status, encodedKet) {
-        let rawKet = decodeURIComponent(encodedKet);
-        const modal = document.getElementById('detailModal');
-        modal.style.display = 'flex';
-        modal.classList.add('show');
-        document.getElementById('detailTitle').innerHTML = nama;
-        document.getElementById('detailProgramGroup').innerHTML = `Program: ${program}`;
+    function openEdit(namakerja) {
+        const row = localData.find(r => getField(r, 'nama', 'nama_pekerjaan') === namakerja);
+        if (!row) return;
         
-        let badge = document.getElementById('detailStatusBadge');
-        badge.innerHTML = status; 
-        badge.className = "badge " + (status==="On Going"?"bg-ongoing":status==="Selesai"?"bg-selesai":status==="On Hold"?"bg-onhold":"bg-perencanaan");
-
-        let container = document.getElementById('detailDynamicContainer');
-        let label = document.getElementById('detailContentLabel');
-        let fileGroup = document.getElementById('fileAttachmentGroup');
-
-        if (status === "On Hold") {
-            label.innerHTML = "Alasan & Kronologi Penundaan (On Hold) :";
-            container.innerHTML = formatOnHoldText(rawKet);
-            fileGroup.style.display = "none";
-        } else {
-            label.innerHTML = "Poin Penting & Rincian Progres Lapangan :";
-            fileGroup.style.display = "block";
-            let parsed = extractFilesAndCleanText(rawKet);
-            container.innerHTML = `<div class="detail-narasi-box">${parsed.text || "Tidak ada catatan riwayat tertulis."}</div>`;
-            
-            let docContainer = document.getElementById('detailDocList'); docContainer.innerHTML = "";
-            if(parsed.files.length === 0) {
-                docContainer.innerHTML = `<span style="color: var(--muted); font-size:13px; font-style:italic;">Tidak ada berkas khusus.</span>`;
-            } else {
-                parsed.files.forEach(f => {
-                    docContainer.innerHTML += `<a href="${f.link}" target="_blank" class="doc-badge-item">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span>${f.icon}</span><div style="text-align:left;"><div style="font-weight:600; font-size:13px;">${f.label}</div><div style="font-size:11px; color:var(--muted);">Kategori: ${f.type}</div></div>
-                        </div><span style="font-size:11px; background:#f1f5f9; padding:4px 8px; border-radius:6px; font-weight:700;">Buka</span>
-                    </a>`;
-                });
-            }
-        }
+        document.getElementById('oldName').value = namakerja;
+        document.getElementById('editNama').value = namakerja;
+        document.getElementById('editStatus').value = getField(row, 'status');
+        document.getElementById('editRealisasi').value = getField(row, 'realisasi');
+        document.getElementById('editKeterangan').value = getField(row, 'keterangan');
+        document.getElementById('editModal').classList.add('show');
     }
 
-    function openEdit(nama, status, realisasi, encodedKet) {
-        let rawKet = decodeURIComponent(encodedKet);
-        const modal = document.getElementById('editModal');
-        modal.style.display = 'flex';
-        modal.classList.add('show');
-        document.getElementById('oldName').value = nama;
-        document.getElementById('editNama').value = nama;
-        document.getElementById('editStatus').value = status;
-        document.getElementById('editRealisasi').value = parseCurrency(realisasi) || 0;
-        document.getElementById('editKeterangan').value = (rawKet === "undefined" || rawKet === "-") ? "" : rawKet;
+    function openDetail(namakerja) {
+        const row = localData.find(r => getField(r, 'nama', 'nama_pekerjaan') === namakerja);
+        if (!row) return;
+        
+        const status = getField(row, 'status');
+        const badgeClass = {
+            'Selesai': 'bg-selesai',
+            'On Going': 'bg-ongoing',
+            'On Hold': 'bg-onhold',
+            'Perencanaan': 'bg-perencanaan'
+        }[status] || 'bg-perencanaan';
+        
+        document.getElementById('detailTitle').textContent = namakerja;
+        document.getElementById('detailProgramGroup').textContent = getField(row, 'program');
+        document.getElementById('detailStatusBadge').className = `badge ${badgeClass}`;
+        document.getElementById('detailStatusBadge').textContent = status;
+        document.getElementById('detailDynamicContainer').innerHTML = `<div class="detail-narasi-box">${getField(row, 'keterangan')}</div>`;
+        
+        document.getElementById('detailModal').classList.add('show');
     }
 
-    function closeModal(modalId) { 
-        const modal = document.getElementById(modalId);
-        modal.classList.remove('show');
-        modal.style.display = 'none'; 
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
     }
 
     function submitEdit() {
-        const btn = document.querySelector('.btn-submit'); 
-        btn.innerHTML = "Menyimpan..."; 
-        btn.disabled = true;
-        const dataUpdate = {
-            oldName: document.getElementById('oldName').value,
-            status: document.getElementById('editStatus').value,
-            realisasi: document.getElementById('editRealisasi').value,
-            keterangan: document.getElementById('editKeterangan').value
-        };
-        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dataUpdate) }).then(() => {
-            alert("Berhasil diupdate!"); 
-            closeModal('editModal'); 
-            location.reload();
-        }).catch(() => { 
-            alert("Gagal."); 
-            btn.innerHTML = "Simpan ke Google Sheets"; 
-            btn.disabled = false; 
-        });
+        alert('Fitur submit akan dihubungkan dengan Google Sheets');
+        closeModal('editModal');
     }
 
-    // ===== RESPONSIVE & DEVICE DETECTION =====
-    const deviceDetection = {
-        isMobile: () => window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-        isTablet: () => window.innerWidth >= 768 && window.innerWidth < 1024,
-        isDesktop: () => window.innerWidth >= 1024,
-        getViewport: () => {
-            if (deviceDetection.isDesktop()) return 'desktop';
-            if (deviceDetection.isTablet()) return 'tablet';
-            return 'mobile';
-        }
-    };
-
-    function autoSelectTab() {
-        const viewport = deviceDetection.getViewport();
-        if (viewport === 'mobile') {
-            switchTab('progress-kartu');
-        } else {
-            switchTab('dashboard');
-        }
-    }
-
-    window.addEventListener('resize', () => {
-        const viewport = deviceDetection.getViewport();
-        const currentTab = document.querySelector('.panel.active');
-        
-        // Jangan paksa perubahan tab jika user sudah memilih, tapi tampilkan peringatan jika viewport berubah drastis
-        if ((viewport === 'mobile' && currentTab.id === 'dashboard') || 
-            (viewport !== 'mobile' && currentTab.id === 'progress-kartu')) {
-            // Biarkan user memilih, hanya debug di console
-            console.log(`Viewport: ${viewport}, Current Tab: ${currentTab.id}`);
-        }
-    });
-
-    window.onload = () => {
-        autoSelectTab();
-        loadData();
-    };
+    window.onload = loadData;
 </script>
+
 </body>
 </html>
