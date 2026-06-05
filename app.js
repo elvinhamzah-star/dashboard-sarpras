@@ -81,26 +81,26 @@ function renderRingkasan() {
     const alerts = [];
 
     dashboardData.master.forEach(item => {
-        const ang = parseFloat(String(item.Total_Anggaran || 0).replace(/[^0-9.-]+/g, "")) || 0;
-        const rel = parseFloat(String(item.Realisasi_Terkini || 0).replace(/[^0-9.-]+/g, "")) || 0;
+        const ang = parseFloat(String(item.total_anggaran || 0).replace(/[^0-9.-]+/g, "")) || 0;
+        const rel = parseFloat(String(item.realisasi_terkini || 0).replace(/[^0-9.-]+/g, "")) || 0;
         tAnggaran += ang;
         tRealisasi += rel;
 
-        const stat = item.Status || 'Tidak Diketahui';
+        const stat = item.status || 'Tidak Diketahui';
         statusCounts[stat] = (statusCounts[stat] || 0) + 1;
 
         // Alerts Logic
-        const progress = parseFloat(item.Progress_Percent) || 0;
+        const progress = parseFloat(item.progress_percent) || 0;
         const sLower = stat.toLowerCase();
 
         if (sLower.includes('hold')) {
-            alerts.push({ type: 'danger', msg: `[${item.ID}] ${item.Nama_Pekerjaan} - Status On Hold.` });
+            alerts.push({ type: 'danger', msg: `[${item.id}] ${item.nama_pekerjaan} - Status On Hold.` });
         }
         if (sLower.includes('going') && progress < 20) {
-            alerts.push({ type: 'warning', msg: `[${item.ID}] ${item.Nama_Pekerjaan} - Progress lambat (${progress}%).` });
+            alerts.push({ type: 'warning', msg: `[${item.id}] ${item.nama_pekerjaan} - Progress lambat (${progress}%).` });
         }
-        if (item.Isu_Utama && String(item.Isu_Utama).trim() !== '-' && String(item.Isu_Utama).trim() !== '') {
-            alerts.push({ type: 'warning', msg: `[${item.ID}] Isu: ${item.Isu_Utama}` });
+        if (item.isu_utama && String(item.isu_utama).trim() !== '-' && String(item.isu_utama).trim() !== '') {
+            alerts.push({ type: 'warning', msg: `[${item.id}] Isu: ${item.isu_utama}` });
         }
     });
 
@@ -132,15 +132,15 @@ function renderRingkasan() {
 function renderOperasional(data) {
     const tbody = document.querySelector('#opsTable tbody');
     tbody.innerHTML = data.map(item => `
-        <tr class="clickable-row" onclick="openModal('${item.ID}')">
-            <td data-label="ID">${item.ID || '-'}</td>
-            <td data-label="Program">${item.Program || '-'}</td>
-            <td data-label="Nama Pekerjaan"><strong>${item.Nama_Pekerjaan || '-'}</strong></td>
-            <td data-label="Jenis Pekerjaan">${item.Jenis_Pekerjaan || '-'}</td>
-            <td data-label="Status"><span class="badge ${getStatusClass(item.Status)}">${item.Status || '-'}</span></td>
-            <td data-label="Progress"><strong>${item.Progress_Percent || '0'}%</strong></td>
-            <td data-label="Vendor">${item.Vendor || '-'}</td>
-            <td data-label="Target Selesai">${item.Target_Selesai || '-'}</td>
+        <tr class="clickable-row" onclick="openModal('${item.id}')">
+            <td data-label="ID">${item.id || '-'}</td>
+            <td data-label="Program">${item.program || '-'}</td>
+            <td data-label="Nama Pekerjaan"><strong>${item.nama_pekerjaan || '-'}</strong></td>
+            <td data-label="Jenis Pekerjaan">${item.jenis_pekerjaan || '-'}</td>
+            <td data-label="Status"><span class="badge ${getStatusClass(item.status)}">${item.status || '-'}</span></td>
+            <td data-label="Progress"><strong>${item.progress_percent || '0'}%</strong></td>
+            <td data-label="Vendor">${item.vendor || '-'}</td>
+            <td data-label="Target Selesai">${item.target_selesai || '-'}</td>
         </tr>
     `).join('');
 }
@@ -149,48 +149,48 @@ function initSearch() {
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         const filtered = dashboardData.master.filter(item => 
-            String(item.ID).toLowerCase().includes(term) ||
-            String(item.Program).toLowerCase().includes(term) ||
-            String(item.Nama_Pekerjaan).toLowerCase().includes(term) ||
-            String(item.Vendor).toLowerCase().includes(term)
+            String(item.id).toLowerCase().includes(term) ||
+            String(item.program).toLowerCase().includes(term) ||
+            String(item.nama_pekerjaan).toLowerCase().includes(term) ||
+            String(item.vendor).toLowerCase().includes(term)
         );
         renderOperasional(filtered);
     });
 }
 
 function openModal(id) {
-    const master = dashboardData.master.find(i => i.ID === id);
-    const timeline = dashboardData.timeline.find(i => i.ID === id) || {};
+    const master = dashboardData.master.find(i => i.id === id);
+    const timeline = dashboardData.timeline.find(i => i.id === id) || {};
     
     if(!master) return;
 
-    document.getElementById('modalTitle').innerText = master.Nama_Pekerjaan;
+    document.getElementById('modalTitle').innerText = master.nama_pekerjaan;
     
     let linksHtml = '';
-    if(master.Link_RAB_Detail) linksHtml += `<a href="${master.Link_RAB_Detail}" target="_blank" class="link-btn">RAB Detail</a><br><br>`;
-    if(master.Link_Dokumentasi) linksHtml += `<a href="${master.Link_Dokumentasi}" target="_blank" class="link-btn">Dokumentasi</a><br><br>`;
-    if(master.Link_Bukti_Transaksi) linksHtml += `<a href="${master.Link_Bukti_Transaksi}" target="_blank" class="link-btn">Bukti Transaksi</a>`;
+    if(master.link_rab_detail) linksHtml += `<a href="${master.link_rab_detail}" target="_blank" class="link-btn">RAB Detail</a><br><br>`;
+    if(master.link_dokumentasi) linksHtml += `<a href="${master.link_dokumentasi}" target="_blank" class="link-btn">Dokumentasi</a><br><br>`;
+    if(master.link_bukti_transaksi) linksHtml += `<a href="${master.link_bukti_transaksi}" target="_blank" class="link-btn">Bukti Transaksi</a>`;
 
     document.getElementById('modalContent').innerHTML = `
         <div class="modal-grid">
-            <div><strong>ID:</strong> ${master.ID}</div>
-            <div><strong>Program:</strong> ${master.Program}</div>
-            <div><strong>Vendor:</strong> ${master.Vendor}</div>
-            <div><strong>Target Selesai:</strong> ${master.Target_Selesai}</div>
-            <div><strong>Status Master:</strong> <span class="badge ${getStatusClass(master.Status)}">${master.Status}</span></div>
-            <div><strong>Progress Master:</strong> ${master.Progress_Percent}%</div>
+            <div><strong>ID:</strong> ${master.id}</div>
+            <div><strong>Program:</strong> ${master.program}</div>
+            <div><strong>Vendor:</strong> ${master.vendor}</div>
+            <div><strong>Target Selesai:</strong> ${master.target_selesai}</div>
+            <div><strong>Status Master:</strong> <span class="badge ${getStatusClass(master.status)}">${master.status}</span></div>
+            <div><strong>Progress Master:</strong> ${master.progress_percent}%</div>
         </div>
         
         <div class="modal-section">
             <h4>Timeline & Kondisi Lapangan</h4>
             <div class="modal-grid">
-                <div><strong>Start Date:</strong> ${timeline.Start_Date || '-'}</div>
-                <div><strong>End Date:</strong> ${timeline.End_Date || '-'}</div>
-                <div><strong>Status Lapangan:</strong> ${timeline.Status_Lapangan || '-'}</div>
-                <div><strong>Progress Timeline:</strong> ${timeline.Progress_Percent ? timeline.Progress_Percent + '%' : '-'}</div>
+                <div><strong>Start Date:</strong> ${timeline.start_date || '-'}</div>
+                <div><strong>End Date:</strong> ${timeline.end_date || '-'}</div>
+                <div><strong>Status Lapangan:</strong> ${timeline.status_lapangan || '-'}</div>
+                <div><strong>Progress Timeline:</strong> ${timeline.progress_percent ? timeline.progress_percent + '%' : '-'}</div>
             </div>
-            <p><strong>Isu Utama (Master):</strong> ${master.Isu_Utama || '-'}</p>
-            <p><strong>Isu Kendala (Timeline):</strong> ${timeline.Isu_Kendala || '-'}</p>
+            <p><strong>Isu Utama (Master):</strong> ${master.isu_utama || '-'}</p>
+            <p><strong>Isu Kendala (Timeline):</strong> ${timeline.isu_kendala || '-'}</p>
         </div>
 
         <div class="modal-section">
@@ -214,13 +214,13 @@ function renderFinansial() {
     const labels = [], dataAnggaran = [], dataRealisasi = [];
 
     dashboardData.master.forEach(item => {
-        const ang = parseFloat(String(item.Total_Anggaran || 0).replace(/[^0-9.-]+/g, "")) || 0;
-        const rel = parseFloat(String(item.Realisasi_Terkini || 0).replace(/[^0-9.-]+/g, "")) || 0;
+        const ang = parseFloat(String(item.total_anggaran || 0).replace(/[^0-9.-]+/g, "")) || 0;
+        const rel = parseFloat(String(item.realisasi_terkini || 0).replace(/[^0-9.-]+/g, "")) || 0;
         tAnggaran += ang;
         tRealisasi += rel;
 
         if (ang > 0 || rel > 0) {
-            labels.push(item.Nama_Pekerjaan.length > 25 ? item.Nama_Pekerjaan.substring(0,25)+'...' : item.Nama_Pekerjaan);
+            labels.push(item.nama_pekerjaan.length > 25 ? item.nama_pekerjaan.substring(0,25)+'...' : item.nama_pekerjaan);
             dataAnggaran.push(ang);
             dataRealisasi.push(rel);
         }
@@ -234,11 +234,11 @@ function renderFinansial() {
 
     document.querySelector('#finTable tbody').innerHTML = dashboardData.realisasi.map(item => `
         <tr>
-            <td data-label="Tanggal Realisasi">${item.Tanggal_Realisasi || '-'}</td>
-            <td data-label="Nama Pekerjaan"><strong>${item.Nama_Pekerjaan || '-'}</strong></td>
-            <td data-label="Deskripsi Biaya">${item.Deskripsi_Biaya || '-'}</td>
-            <td data-label="Nominal Realisasi"><strong>${formatCurrency(item.Nominal_Realisasi)}</strong></td>
-            <td data-label="Status Dana"><span class="badge ${getStatusClass(item.Status_Dana)}">${item.Status_Dana || '-'}</span></td>
+            <td data-label="Tanggal Realisasi">${item.tanggal_realisasi || '-'}</td>
+            <td data-label="Nama Pekerjaan"><strong>${item.nama_pekerjaan || '-'}</strong></td>
+            <td data-label="Deskripsi Biaya">${item.deskripsi_biaya || '-'}</td>
+            <td data-label="Nominal Realisasi"><strong>${formatCurrency(item.nominal_realisasi)}</strong></td>
+            <td data-label="Status Dana"><span class="badge ${getStatusClass(item.status_dana)}">${item.status_dana || '-'}</span></td>
         </tr>
     `).join('');
 
@@ -251,15 +251,15 @@ function renderFinansial() {
 // SECTION: PENGAJUAN DANA
 function renderPengajuan() {
     document.querySelector('#pengajuanTable tbody').innerHTML = dashboardData.pengajuan.map(item => {
-        const linkHtml = (item.Link_Doc_Pengajuan && item.Link_Doc_Pengajuan.startsWith('http')) 
-            ? `<a href="${item.Link_Doc_Pengajuan}" target="_blank" class="link-btn">Buka</a>` 
+        const linkHtml = (item.link_doc_pengajuan && item.link_doc_pengajuan.startsWith('http')) 
+            ? `<a href="${item.link_doc_pengajuan}" target="_blank" class="link-btn">Buka</a>` 
             : '-';
         return `
         <tr>
-            <td data-label="Tanggal Pengajuan">${item.Tanggal_Pengajuan || '-'}</td>
-            <td data-label="Nama Pekerjaan"><strong>${item.Nama_Pekerjaan || '-'}</strong></td>
-            <td data-label="Nilai Pengajuan">${formatCurrency(item.Nilai_Pengajuan)}</td>
-            <td data-label="Status Pencairan"><span class="badge ${getStatusClass(item.Status_Pencairan)}">${item.Status_Pencairan || '-'}</span></td>
+            <td data-label="Tanggal Pengajuan">${item.tanggal_pengajuan || '-'}</td>
+            <td data-label="Nama Pekerjaan"><strong>${item.nama_pekerjaan || '-'}</strong></td>
+            <td data-label="Nilai Pengajuan">${formatCurrency(item.nilai_pengajuan)}</td>
+            <td data-label="Status Pencairan"><span class="badge ${getStatusClass(item.status_pencairan)}">${item.status_pencairan || '-'}</span></td>
             <td data-label="Dokumen">${linkHtml}</td>
         </tr>
     `}).join('');
@@ -268,12 +268,12 @@ function renderPengajuan() {
 // SECTION: DOKUMEN
 function renderDokumen() {
     document.querySelector('#dokumenTable tbody').innerHTML = dashboardData.master.map(item => {
-        const rab = item.Link_RAB_Detail && item.Link_RAB_Detail.startsWith('http') ? `<a href="${item.Link_RAB_Detail}" target="_blank" class="link-btn">RAB</a>` : '-';
-        const dok = item.Link_Dokumentasi && item.Link_Dokumentasi.startsWith('http') ? `<a href="${item.Link_Dokumentasi}" target="_blank" class="link-btn">Dokumentasi</a>` : '-';
-        const bkt = item.Link_Bukti_Transaksi && item.Link_Bukti_Transaksi.startsWith('http') ? `<a href="${item.Link_Bukti_Transaksi}" target="_blank" class="link-btn">Bukti</a>` : '-';
+        const rab = item.link_rab_detail && item.link_rab_detail.startsWith('http') ? `<a href="${item.link_rab_detail}" target="_blank" class="link-btn">RAB</a>` : '-';
+        const dok = item.link_dokumentasi && item.link_dokumentasi.startsWith('http') ? `<a href="${item.link_dokumentasi}" target="_blank" class="link-btn">Dokumentasi</a>` : '-';
+        const bkt = item.link_bukti_transaksi && item.link_bukti_transaksi.startsWith('http') ? `<a href="${item.link_bukti_transaksi}" target="_blank" class="link-btn">Bukti</a>` : '-';
         return `
         <tr>
-            <td data-label="Nama Pekerjaan"><strong>${item.Nama_Pekerjaan || '-'}</strong></td>
+            <td data-label="Nama Pekerjaan"><strong>${item.nama_pekerjaan || '-'}</strong></td>
             <td data-label="Link RAB Detail">${rab}</td>
             <td data-label="Link Dokumentasi">${dok}</td>
             <td data-label="Link Bukti Transaksi">${bkt}</td>
@@ -298,7 +298,7 @@ function renderGaleri(filter) {
     let data = dashboardData.dokumentasi;
 
     if (filter !== 'Semua') {
-        data = data.filter(item => String(item.Kategori_Foto).toLowerCase() === filter.toLowerCase());
+        data = data.filter(item => String(item.kategori_foto).toLowerCase() === filter.toLowerCase());
     }
 
     if (data.length === 0) {
@@ -308,12 +308,12 @@ function renderGaleri(filter) {
 
     container.innerHTML = data.map(item => `
         <div class="gallery-card">
-            <img src="${item.Link_Foto || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${item.Kategori_Foto}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+            <img src="${item.link_foto || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${item.kategori_foto}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
             <div class="gallery-info">
-                <h4>${item.Nama_Pekerjaan || '-'}</h4>
-                <p><strong>Kategori:</strong> ${item.Kategori_Foto || '-'}</p>
-                <p>${item.Caption || '-'}</p>
-                <div class="date">${item.Tanggal_Upload || '-'}</div>
+                <h4>${item.nama_pekerjaan || '-'}</h4>
+                <p><strong>Kategori:</strong> ${item.kategori_foto || '-'}</p>
+                <p>${item.caption || '-'}</p>
+                <div class="date">${item.tanggal_upload || '-'}</div>
             </div>
         </div>
     `).join('');
