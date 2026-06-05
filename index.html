@@ -2,27 +2,161 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Sarpras Al-Fatih</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Maintenance Sarpras Madrasah Al-Fatih</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Dashboard Maintenance Sarpras</h1>
-        <p>Madrasah Al-Fatih</p>
+    <header class="dashboard-header">
+        <div class="header-content">
+            <img src="logo.png" alt="Logo Madrasah Al-Fatih" class="logo" onerror="this.style.display='none'">
+            <div class="header-titles">
+                <h1>Dashboard Maintenance Sarpras Madrasah Al-Fatih</h1>
+                <p>Sistem Pelaporan Otomatis Progress Kerja & Manajemen Realisasi Anggaran Lapangan</p>
+            </div>
+        </div>
+        <nav class="dashboard-nav">
+            <button class="nav-btn active" data-target="ringkasan">Ringkasan</button>
+            <button class="nav-btn" data-target="operasional">Operasional</button>
+            <button class="nav-btn" data-target="finansial">Finansial</button>
+            <button class="nav-btn" data-target="pengajuan">Pengajuan Dana</button>
+            <button class="nav-btn" data-target="dokumen">Dokumen</button>
+            <button class="nav-btn" data-target="galeri">Galeri Dokumentasi</button>
+        </nav>
     </header>
-    
-    <div class="container">
-        <div id="summary" class="summary-cards"></div>
-        <input type="text" id="searchInput" placeholder="Cari nama pekerjaan atau program...">
-        <table id="dataTable">
-            <thead>
-                <tr><th>ID</th><th>Program</th><th>Nama Pekerjaan</th><th>Status</th><th>Anggaran</th><th>Realisasi</th></tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+
+    <main class="dashboard-container">
+        <div id="loading" class="loading-state">Memuat data lapangan...</div>
+
+        <section id="ringkasan" class="tab-content active">
+            <div class="kpi-grid" id="kpi-ringkasan">
+                </div>
+            <div class="grid-2-col">
+                <div class="card">
+                    <h3>Jumlah Pekerjaan per Status</h3>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Alert Lapangan & Perhatian Khusus</h3>
+                    <div id="alerts-container" class="alerts-list">
+                        </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="operasional" class="tab-content">
+            <div class="toolbar">
+                <input type="text" id="searchInput" placeholder="Cari realtime berdasarkan ID, Program, Pekerjaan, Vendor...">
+            </div>
+            <table class="responsive-table" id="opsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Program</th>
+                        <th>Nama Pekerjaan</th>
+                        <th>Jenis Pekerjaan</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Vendor</th>
+                        <th>Target Selesai</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+        <section id="finansial" class="tab-content">
+            <div class="kpi-grid" id="kpi-finansial">
+                </div>
+            <div class="card chart-section">
+                <h3>Anggaran vs Realisasi</h3>
+                <div class="chart-container chart-large">
+                    <canvas id="finansialChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Tabel Realisasi Dana</h3>
+                <table class="responsive-table" id="finTable">
+                    <thead>
+                        <tr>
+                            <th>Tanggal Realisasi</th>
+                            <th>Nama Pekerjaan</th>
+                            <th>Deskripsi Biaya</th>
+                            <th>Nominal Realisasi</th>
+                            <th>Status Dana</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="pengajuan" class="tab-content">
+            <div class="card">
+                <h3>Daftar Pengajuan Dana</h3>
+                <table class="responsive-table" id="pengajuanTable">
+                    <thead>
+                        <tr>
+                            <th>Tanggal Pengajuan</th>
+                            <th>Nama Pekerjaan</th>
+                            <th>Nilai Pengajuan</th>
+                            <th>Status Pencairan</th>
+                            <th>Dokumen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="dokumen" class="tab-content">
+            <div class="card">
+                <h3>Pusat Dokumen Pendukung</h3>
+                <table class="responsive-table" id="dokumenTable">
+                    <thead>
+                        <tr>
+                            <th>Nama Pekerjaan</th>
+                            <th>Link RAB Detail</th>
+                            <th>Link Dokumentasi</th>
+                            <th>Link Bukti Transaksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="galeri" class="tab-content">
+            <div class="toolbar filter-bar" id="galleryFilters">
+                <button class="filter-btn active" data-filter="Semua">Semua</button>
+                <button class="filter-btn" data-filter="Awal">Awal</button>
+                <button class="filter-btn" data-filter="Proses">Proses</button>
+                <button class="filter-btn" data-filter="Akhir">Akhir</button>
+                <button class="filter-btn" data-filter="Dokumentasi">Dokumentasi</button>
+            </div>
+            <div class="gallery-grid" id="galleryContainer">
+                </div>
+        </section>
+    </main>
+
+    <div id="detailModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">Detail Pekerjaan</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                </div>
+        </div>
     </div>
 
-    <div id="modal" class="modal"><div class="modal-content"><span class="close">&times;</span><div id="modalBody"></div></div></div>
     <script src="app.js"></script>
 </body>
 </html>
