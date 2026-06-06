@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Maintenance Sarpras Madrasah Al-Fatih</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- HEADER -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-branding">
+                    <h1 class="dashboard-title">Dashboard Maintenance Sarpras</h1>
+                    <p class="dashboard-subtitle">Madrasah Al-Fatih</p>
+                </div>
+                <nav class="dashboard-nav">
+                    <button class="nav-btn active" data-view="home">
+                        <span class="nav-label">Beranda</span>
+                    </button>
+                    <button class="nav-btn" data-view="projects">
+                        <span class="nav-label">Semua Proyek</span>
+                    </button>
+                    <button class="nav-btn" data-view="financial">
+                        <span class="nav-label">Keuangan</span>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main class="dashboard-main">
+            <!-- HOME VIEW -->
+            <section id="view-home" class="view-section active">
+                <!-- Loading State -->
+                <div id="loading-state" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Sinkronisasi data lapangan...</p>
+                </div>
+
+                <!-- Content (hidden until loaded) -->
+                <div id="home-content" class="home-content" style="display: none;">
+                    <!-- KPI Summary -->
+                    <div class="kpi-section">
+                        <div class="kpi-grid">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Total Anggaran</div>
+                                <div class="kpi-value" id="kpi-total-budget">Rp0</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-label">Total Realisasi</div>
+                                <div class="kpi-value" id="kpi-total-realisasi">Rp0</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-label">Sisa Anggaran</div>
+                                <div class="kpi-value" id="kpi-remaining">Rp0</div>
+                            </div>
+                            <div class="kpi-card accent">
+                                <div class="kpi-label">Penyerapan</div>
+                                <div class="kpi-value" id="kpi-absorption">0%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Requires Attention Section -->
+                    <section class="attention-section">
+                        <h2 class="section-title">Memerlukan Perhatian</h2>
+                        <div id="attention-grid" class="attention-grid"></div>
+                    </section>
+
+                    <!-- Status Overview -->
+                    <section class="overview-section">
+                        <h2 class="section-title">Status Proyek</h2>
+                        <div class="status-overview">
+                            <div id="status-counts" class="status-counts"></div>
+                            <div class="chart-box">
+                                <canvas id="statusChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <!-- ALL PROJECTS VIEW -->
+            <section id="view-projects" class="view-section">
+                <div class="view-header">
+                    <h2 class="section-title">Semua Proyek</h2>
+                    <div class="view-controls">
+                        <input 
+                            type="text" 
+                            id="search-projects" 
+                            class="search-input" 
+                            placeholder="Cari proyek, vendor, atau ID..."
+                        >
+                        <select id="filter-status" class="filter-select">
+                            <option value="">Semua Status</option>
+                            <option value="Selesai">Selesai</option>
+                            <option value="On Going">On Going</option>
+                            <option value="On Hold">On Hold</option>
+                            <option value="Perencanaan">Perencanaan</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="projects-grid" class="projects-grid"></div>
+            </section>
+
+            <!-- FINANCIAL VIEW -->
+            <section id="view-financial" class="view-section">
+                <h2 class="section-title">Ringkasan Keuangan</h2>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Total Anggaran</div>
+                        <div class="kpi-value" id="fin-total-budget">Rp0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Total Realisasi</div>
+                        <div class="kpi-value" id="fin-total-realisasi">Rp0</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Sisa Anggaran</div>
+                        <div class="kpi-value" id="fin-remaining">Rp0</div>
+                    </div>
+                </div>
+
+                <div class="financial-grid">
+                    <!-- Budget vs Realisasi Chart -->
+                    <div class="card">
+                        <h3 class="card-title">Anggaran vs Realisasi per Proyek</h3>
+                        <div class="chart-container">
+                            <canvas id="financialChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Realisasi Table -->
+                    <div class="card">
+                        <h3 class="card-title">Riwayat Realisasi Dana</h3>
+                        <div class="table-wrapper">
+                            <table class="data-table" id="table-realisasi">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Proyek</th>
+                                        <th>Deskripsi</th>
+                                        <th>Nominal</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pengajuan Table -->
+                    <div class="card">
+                        <h3 class="card-title">Pengajuan Dana</h3>
+                        <div class="table-wrapper">
+                            <table class="data-table" id="table-pengajuan">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal Pengajuan</th>
+                                        <th>Proyek</th>
+                                        <th>Nilai</th>
+                                        <th>Status</th>
+                                        <th>Dokumen</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- PROJECT DETAIL OVERLAY (Full Page) -->
+    <div id="detail-overlay" class="detail-overlay">
+        <div class="detail-container">
+            <!-- Detail Header -->
+            <div class="detail-header">
+                <div class="detail-title-section">
+                    <h2 id="detail-title" class="detail-title">Detail Proyek</h2>
+                    <p id="detail-subtitle" class="detail-subtitle"></p>
+                </div>
+                <button class="detail-close" onclick="closeProjectDetail()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Detail Content -->
+            <div class="detail-scroll-area">
+                <div class="detail-content">
+                    <!-- Status & Progress Section -->
+                    <section class="detail-section">
+                        <h3 class="section-subtitle">Status & Progress</h3>
+                        <div class="detail-grid-2">
+                            <div class="detail-field">
+                                <label>Status Proyek</label>
+                                <div id="detail-status" class="badge"></div>
+                            </div>
+                            <div class="detail-field">
+                                <label>Target Selesai</label>
+                                <p id="detail-target-date">-</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Progress</label>
+                                <div class="progress-display">
+                                    <div class="progress-bar">
+                                        <div id="detail-progress-fill" class="progress-fill"></div>
+                                    </div>
+                                    <span id="detail-progress-text" class="progress-text">0%</span>
+                                </div>
+                            </div>
+                            <div class="detail-field">
+                                <label>Terakhir Diupdate</label>
+                                <p id="detail-updated-date">-</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Basic Info -->
+                    <section class="detail-section">
+                        <h3 class="section-subtitle">Informasi Dasar</h3>
+                        <div class="detail-grid-2">
+                            <div class="detail-field">
+                                <label>ID Proyek</label>
+                                <p id="detail-id">-</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Program</label>
+                                <p id="detail-program">-</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Jenis Pekerjaan</label>
+                                <p id="detail-jenis">-</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Vendor</label>
+                                <p id="detail-vendor">-</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Issues Section -->
+                    <section class="detail-section" id="issues-section" style="display: none;">
+                        <h3 class="section-subtitle">Isu & Perhatian</h3>
+                        <div id="detail-issues" class="issues-box"></div>
+                    </section>
+
+                    <!-- Financial Section -->
+                    <section class="detail-section">
+                        <h3 class="section-subtitle">Keuangan</h3>
+                        <div class="detail-grid-2">
+                            <div class="detail-field">
+                                <label>Total Anggaran</label>
+                                <p id="detail-budget" class="amount">Rp0</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Realisasi</label>
+                                <p id="detail-realisasi" class="amount">Rp0</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Sisa Anggaran</label>
+                                <p id="detail-remaining" class="amount">Rp0</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>% Penyerapan</label>
+                                <p id="detail-absorption">0%</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Timeline Section -->
+                    <section class="detail-section" id="timeline-section" style="display: none;">
+                        <h3 class="section-subtitle">Timeline</h3>
+                        <div class="detail-grid-2">
+                            <div class="detail-field">
+                                <label>Tanggal Mulai</label>
+                                <p id="detail-start-date">-</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Tanggal Selesai Target</label>
+                                <p id="detail-end-date">-</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Status Lapangan</label>
+                                <p id="detail-status-lapangan">-</p>
+                            </div>
+                            <div class="detail-field">
+                                <label>Isu Kendala</label>
+                                <p id="detail-isu-kendala">-</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Documentation Section -->
+                    <section class="detail-section" id="docs-section" style="display: none;">
+                        <h3 class="section-subtitle">Dokumentasi</h3>
+                        <div id="detail-docs" class="docs-list"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
